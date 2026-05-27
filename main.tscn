@@ -212,6 +212,18 @@ text = "1.0"
 layout_mode = 2
 text = "interpolation"
 
+[node name="MirroredAnim" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree" unique_id=1879645071]
+layout_mode = 2
+text = "mirror animation"
+
+[node name="GunMode" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree" unique_id=500927367]
+layout_mode = 2
+text = "gun mode"
+
+[node name="ClipboardButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree" unique_id=259976229]
+layout_mode = 2
+text = "Export to clipboard"
+
 [node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/HBoxContainer" unique_id=1247340886]
 custom_minimum_size = Vector2(512, 512)
 layout_mode = 2
@@ -233,7 +245,7 @@ texture_filter = 1
 position = Vector2(256, 256)
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_gxbgy")
-frame = 5
+frame = 4
 
 [node name="RotationAnchor" type="Node2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist" unique_id=220633843]
 unique_name_in_owner = true
@@ -284,3 +296,6 @@ color = Color(1, 0, 0, 1)
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/GlobalRotation" to="." method="_on_global_rotation_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/TimeScale" to="." method="_on_time_scale_text_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/Interpolation" to="." method="_on_interpolation_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/MirroredAnim" to="." method="_on_mirrored_anim_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/GunMode" to="." method="_on_gun_mode_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/ClipboardButton" to="." method="_on_clipboard_button_pressed"]

@@ -17,6 +17,8 @@ var time = 0.0
 var playing = false
 var time_scale = 1.0
 var interpolated = false
+var mirrored = false
+var gunmode = false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -26,7 +28,7 @@ func _ready():
 func _process(delta):
 	if(!playing):
 		return
-		
+	
 	if keyframes.size() < 2:
 		return
 
@@ -52,6 +54,11 @@ func update_animation():
 
 	if keyframes.size() < 2:
 		return
+
+	if(mirrored):
+		rotation_anchor.scale = Vector2.ONE
+	else:
+		rotation_anchor.scale = Vector2(-1.0, 1.0)
 
 	var current = keyframes[0]
 	var next = keyframes[1]
@@ -81,12 +88,19 @@ func apply_interpolated_frame(a, b, t):
 			weapon_sprite.scale = Vector2(-a.scaleX, a.scaleY)
 			weapon_sprite.modulate = a.color
 			return
-
-	weapon_sprite.position = Vector2(
-		lerp(-a.offsetX, -b.offsetX, t),
-		lerp(-a.offsetY, -b.offsetY, t)
-	) / 0.03125
+	if(gunmode):
+		weapon_sprite.position = Vector2(
+			lerp(a.offsetX, b.offsetX, t),
+			lerp(-a.offsetY, -b.offsetY, t)
+		) / 0.03125
+	else:
+		weapon_sprite.position = Vector2(
+			lerp(-a.offsetX, -b.offsetX, t),
+			lerp(-a.offsetY, -b.offsetY, t)
+		) / 0.03125
 	weapon_sprite.rotation_degrees = lerp(a.angle, b.angle, t)
+	if(gunmode):
+		weapon_sprite.rotation_degrees += 180
 	weapon_sprite.scale = Vector2(
 		lerp(-a.scaleX, -b.scaleX, t),
 		lerp(a.scaleY, b.scaleY, t)
@@ -153,13 +167,13 @@ func _on_global_rotation_text_changed(new_text):
 	var rotation:float = float(new_text)
 	rotation_anchor.global_rotation_degrees = rotation
 	if rotation >= -45 and rotation < 45:
-		urist.frame = 5
-	elif rotation >= 45 and rotation < 135:
-		urist.frame = 6
-	elif rotation >= -135 and rotation < -45:
-		urist.frame = 7
-	else:
 		urist.frame = 4
+	elif rotation >= 45 and rotation < 135:
+		urist.frame = 7
+	elif rotation >= -135 and rotation < -45:
+		urist.frame = 6
+	else:
+		urist.frame = 5
 
 
 func _on_set_sprite_button_pressed():
@@ -198,3 +212,16 @@ func _on_time_scale_text_changed(new_text):
 func _on_interpolation_pressed():
 	interpolated = not interpolated
 	
+
+
+func _on_mirrored_anim_pressed():
+	mirrored = not mirrored
+
+
+func _on_gun_mode_pressed():
+	gunmode = not gunmode
+	rotation_anchor.global_rotation_degrees = 180
+
+
+func _on_clipboard_button_pressed():
+	DisplayServer.clipboard_set(yaml_text.text)
