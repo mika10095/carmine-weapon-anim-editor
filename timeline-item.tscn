@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://cd5nssgom0amw"]
+
+[ext_resource type="Script" uid="uid://b5757vodbenct" path="res://timeline-item.gd" id="1_hh2x1"]
+
+[node name="ColorRect" type="ColorRect" unique_id=818570538]
+custom_minimum_size = Vector2(16, 0)
+offset_right = 32.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+color = Color(9.241105e-06, 0.6413732, 0.86247224, 1)
+script = ExtResource("1_hh2x1")
+
+[node name="IndexLabel" type="Label" parent="." unique_id=314528487]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1

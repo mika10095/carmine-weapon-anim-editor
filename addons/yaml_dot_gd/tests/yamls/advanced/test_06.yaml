@@ -1,0 +1,6 @@
+tricky_string: "un ': \"terminated"
+valid#:key: aweird#string # it's comment
+not_comment: " #string" # it's a comment
+multi: |- # believe it or not, a comment
+  This is a multiline string.
+  # This is NOT a comment.
