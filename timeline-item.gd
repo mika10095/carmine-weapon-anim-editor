@@ -14,9 +14,16 @@ func initialise(key:AnimationKey):
 	index_label.text = str(key.index)
 	length = key.delta
 	editor.total_length_changed.connect(_on_total_length_changed)
+	editor.current_key_changed.connect(_on_key_changed)
 
 func _on_total_length_changed(item_count):
 	await get_tree().process_frame
 	var total_width = anim_key_holder.size.x-200
 	custom_minimum_size.x = total_width*(length/item_count)
 	print("new length for "+ index_label.text+" "+ str(size.x))
+
+func _on_key_changed(key):
+	if index_label.text == str(key):
+		color = Color.GREEN_YELLOW
+	else:
+		color = Color.from_string("00a4dc", Color.AQUA)

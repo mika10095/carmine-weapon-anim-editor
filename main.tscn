@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://q14md7vy154d" path="res://human.png" id="2_h2yge"]
 [ext_resource type="Texture2D" uid="uid://ir5u041hjb6f" path="res://knife.png" id="4_7mycd"]
 [ext_resource type="Texture2D" uid="uid://dbr3cdmmpudke" path="res://help.png" id="4_lquwl"]
+[ext_resource type="Script" uid="uid://coy6eo755wnfk" path="res://fixed_marker.gd" id="6_7mycd"]
 
 [sub_resource type="Gradient" id="Gradient_uek5b"]
 colors = PackedColorArray(0.7382431, 0.2183398, 1, 1, 0, 0, 0, 1)
@@ -308,6 +309,38 @@ offset_left = -4.0
 offset_right = 6.0
 offset_bottom = 32.0
 color = Color(1, 0, 0, 1)
+
+[node name="FixedMarker" type="ColorRect" parent="VBoxContainer/Timeline" unique_id=2018043519]
+layout_mode = 0
+offset_right = 10.0
+offset_bottom = 32.0
+color = Color(1, 0.69411767, 0, 1)
+script = ExtResource("6_7mycd")
+mark_time = 1.0
+
+[node name="FixedMarker2" type="ColorRect" parent="VBoxContainer/Timeline" unique_id=943434732]
+layout_mode = 0
+offset_right = 10.0
+offset_bottom = 32.0
+color = Color(1, 0.69411767, 0, 1)
+script = ExtResource("6_7mycd")
+mark_time = 2.0
+
+[node name="FixedMarker3" type="ColorRect" parent="VBoxContainer/Timeline" unique_id=426947358]
+layout_mode = 0
+offset_right = 10.0
+offset_bottom = 32.0
+color = Color(1, 0.69411767, 0, 1)
+script = ExtResource("6_7mycd")
+mark_time = 3.0
+
+[node name="FixedMarker45" type="ColorRect" parent="VBoxContainer/Timeline" unique_id=1250721564]
+layout_mode = 0
+offset_right = 10.0
+offset_bottom = 32.0
+color = Color(1, 0.69411767, 0, 1)
+script = ExtResource("6_7mycd")
+mark_time = 4.5
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/Button" to="." method="_on_parse_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/AnimButton" to="." method="_on_anim_button_pressed"]

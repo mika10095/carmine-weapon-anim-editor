@@ -12,6 +12,7 @@ const TIMELINE_ITEM = preload("uid://cd5nssgom0amw")
 
 var keyframes = []
 signal total_length_changed(item_count)
+signal current_key_changed(key)
 var index = 0
 var time = 0.0
 var playing = false
@@ -86,33 +87,87 @@ func update_animation():
 	t = t * t * (3.0 - 2.0 * t)
 
 	current_time_label.text = "time " + str(time).substr(0, 4) + " key " + str(i)
+	current_key_changed.emit(i)
+	apply_interpolated_frame(current, next, t, i)
 
-	apply_interpolated_frame(current, next, t)
+func cubic_interp(p0, p1, p2, p3, t):
+	var t2 = t * t
+	var t3 = t2 * t
 
-func apply_interpolated_frame(a, b, t):
-	if !interpolated:
-			weapon_sprite.position = Vector2(-a.offsetX, -a.offsetY) / 0.03125
-			weapon_sprite.rotation_degrees = a.angle
-			weapon_sprite.scale = Vector2(-a.scaleX, a.scaleY)
-			weapon_sprite.modulate = a.color
-			return
-	if(gunmode):
-		weapon_sprite.position = Vector2(
-			lerp(a.offsetX, b.offsetX, t),
-			lerp(-a.offsetY, -b.offsetY, t)
-		) / 0.03125
-	else:
-		weapon_sprite.position = Vector2(
-			lerp(-a.offsetX, -b.offsetX, t),
-			lerp(-a.offsetY, -b.offsetY, t)
-		) / 0.03125
-	weapon_sprite.rotation_degrees = lerp(a.angle, b.angle, t)
-	if(gunmode):
-		weapon_sprite.rotation_degrees += 180
-	weapon_sprite.scale = Vector2(
-		lerp(-a.scaleX, -b.scaleX, t),
-		lerp(a.scaleY, b.scaleY, t)
+	return 0.5 * (
+		(2.0 * p1) +
+		(-p0 + p2) * t +
+		(2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2 +
+		(-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t3
 	)
+
+func apply_interpolated_frame(a, b, t, i):
+	if !interpolated:
+		weapon_sprite.position = Vector2(-a.offsetX, -a.offsetY) / 0.03125
+		weapon_sprite.rotation_degrees = a.angle
+		weapon_sprite.scale = Vector2(-a.scaleX, a.scaleY)
+		weapon_sprite.modulate = a.color
+		return
+
+	var p0 = keyframes[max(i - 1, 0)]
+	var p1 = a
+	var p2 = b
+	var p3 = keyframes[min(i + 2, keyframes.size() - 1)]
+
+	var pos_x
+	var pos_y
+
+	if gunmode:
+		pos_x = cubic_interp(
+			p0.offsetX,
+			p1.offsetX,
+			p2.offsetX,
+			p3.offsetX,
+			t
+		)
+
+		pos_y = cubic_interp(
+			-p0.offsetY,
+			-p1.offsetY,
+			-p2.offsetY,
+			-p3.offsetY,
+			t
+		)
+	else:
+		pos_x = cubic_interp(
+			-p0.offsetX,
+			-p1.offsetX,
+			-p2.offsetX,
+			-p3.offsetX,
+			t
+		)
+
+		pos_y = cubic_interp(
+			-p0.offsetY,
+			-p1.offsetY,
+			-p2.offsetY,
+			-p3.offsetY,
+			t
+		)
+
+	weapon_sprite.position = Vector2(pos_x, pos_y) / 0.03125
+
+	weapon_sprite.rotation_degrees = cubic_interp(
+		p0.angle,
+		p1.angle,
+		p2.angle,
+		p3.angle,
+		t
+	)
+
+	if gunmode:
+		weapon_sprite.rotation_degrees += 180
+
+	weapon_sprite.scale = Vector2(
+		cubic_interp(-p0.scaleX, -p1.scaleX, -p2.scaleX, -p3.scaleX, t),
+		cubic_interp(p0.scaleY, p1.scaleY, p2.scaleY, p3.scaleY, t)
+	)
+
 	weapon_sprite.modulate = a.color.lerp(b.color, t)
 
 func _on_parse_pressed():
