@@ -19,6 +19,8 @@ var time_scale = 1.0
 var interpolated = false
 var mirrored = false
 var gunmode = false
+var start_time = 0.0
+var end_time = 0.0
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -42,8 +44,14 @@ func _process(delta):
 	var progress_max = anim_key_holder.size.x 
 	progress_marker.position.x = progress_max*(time/total_length)-8
 	
+	if time < start_time:
+		time = start_time
+	
 	if time >= total_length:
-		time = 0.0
+		time = start_time
+	
+	if time >= end_time && end_time > 0:
+		time = start_time
 
 	update_animation()
 
@@ -77,7 +85,7 @@ func update_animation():
 
 	t = t * t * (3.0 - 2.0 * t)
 
-	current_time_label.text = "time " + str(time).substr(0, 5) + " key " + str(i)
+	current_time_label.text = "time " + str(time).substr(0, 4) + " key " + str(i)
 
 	apply_interpolated_frame(current, next, t)
 
@@ -225,3 +233,15 @@ func _on_gun_mode_pressed():
 
 func _on_clipboard_button_pressed():
 	DisplayServer.clipboard_set(yaml_text.text)
+
+
+func _on_start_time_text_changed(new_text):
+	var start = float(new_text)
+	if(start):
+		start_time = start
+
+
+func _on_end_time_text_changed(new_text):
+	var end = float(new_text)
+	if(end):
+		end_time = end
