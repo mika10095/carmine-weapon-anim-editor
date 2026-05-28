@@ -5,10 +5,28 @@ const TIMELINE_ITEM = preload("uid://cd5nssgom0amw")
 @onready var total_length_label = $VBoxContainer/HBoxContainer/Tree/TotalLengthLabel
 @onready var current_time_label = $VBoxContainer/HBoxContainer/Tree/CurrentTimeLabel
 @onready var weapon_sprite = %WeaponSprite
+@onready var weapon_sprite_ghost = %WeaponSpriteGhost
 @onready var rotation_anchor = %RotationAnchor
 @onready var progress_marker = %ProgressMarker
 @onready var anim_key_holder = %AnimKeyHolder
 @onready var urist = %Urist
+
+@onready var key_pos_x_text = %KeyPosX
+@onready var key_pos_y_text = %KeyPosY
+@onready var key_scale_x_text = %KeyScaleX
+@onready var key_scale_y_text = %KeyScaleY
+@onready var key_rot_text = %KeyRot
+@onready var key_length_text = %KeyLength
+
+var key_color = Color.WHITE
+var key_pos_x = 0.0
+var key_pos_y = 0.0
+var key_scale_x = 1.0
+var key_scale_y = 1.0
+var key_rot = 0.0
+var key_length = 1.0
+
+var selected_key = 0
 
 var keyframes = []
 signal total_length_changed(item_count)
@@ -22,13 +40,54 @@ var mirrored = false
 var gunmode = false
 var start_time = 0.0
 var end_time = 0.0
+var move_speed = 50
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
 
+func _input(event):
+	pass
+
+func _write_back_keys():
+	yaml_text.clear()
+	yaml_text.text += "animationKeyframes:\n"
+	for key in keyframes:
+		yaml_text.text += key._to_yaml()
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	var movement_vec = Input.get_vector("move_right","move_left","move_up","move_down")
+	var rotation_vec = Input.get_vector("rotate_right", "rotate_left","length_up","length_down")
+	if(movement_vec):
+		weapon_sprite_ghost.position += movement_vec*delta*move_speed
+		key_pos_x_text.text = str(snapped(-weapon_sprite_ghost.position.x * 0.03125,0.01))
+		key_pos_y_text.text = str(snapped(-weapon_sprite_ghost.position.y * 0.03125,0.01))
+	if(rotation_vec):
+		weapon_sprite_ghost.rotation_degrees += rotation_vec.x*delta*move_speed
+		key_rot_text.text = str(snapped(weapon_sprite_ghost.rotation_degrees,0.01))
+	var new_key = AnimationKey.new()
+	new_key.index = index
+	new_key.offsetX = float(key_pos_x_text.text)
+	new_key.offsetY = float(key_pos_y_text.text)
+	new_key.angle = float(key_rot_text.text)
+	new_key.scaleX = float(key_scale_x_text.text)
+	new_key.scaleY = float(key_scale_y_text.text)
+	new_key.color = key_color
+	new_key.delta = float(key_length_text.text)
+	if(Input.is_action_just_pressed("quick_key_place")):
+		keyframes.insert(selected_key+1, new_key)
+		index += 1
+		selected_key += 1
+		_write_back_keys()
+		_on_parse_pressed()
+		current_key_changed.emit(selected_key)
+	elif(Input.is_action_just_pressed("key_modify")):
+		new_key.index = selected_key
+		keyframes.set(selected_key, new_key)
+		_write_back_keys()
+		_on_parse_pressed()
+		current_key_changed.emit(selected_key)
 	if(!playing):
 		return
 	
@@ -88,6 +147,7 @@ func update_animation():
 
 	current_time_label.text = "time " + str(time).substr(0, 4) + " key " + str(i)
 	current_key_changed.emit(i)
+	selected_key = i
 	apply_interpolated_frame(current, next, t, i)
 
 func cubic_interp(p0, p1, p2, p3, t):
@@ -217,10 +277,14 @@ func set_total_length():
 
 func _on_anim_button_pressed():
 	if(!playing):
+		weapon_sprite_ghost.visible = true
+		weapon_sprite_ghost.process_mode = Node.PROCESS_MODE_ALWAYS
 		playing = true
 		time = 0.0
 		anim_button.text = "Stop"
 	else:
+		weapon_sprite_ghost.visible = true
+		weapon_sprite_ghost.process_mode = Node.PROCESS_MODE_ALWAYS
 		playing = false
 		time = 0.0
 		anim_button.text = "Play"
@@ -265,6 +329,7 @@ func _on_sprite_file_selected(path: String):
 	var texture := ImageTexture.create_from_image(image)
 
 	weapon_sprite.texture = texture
+	weapon_sprite_ghost.texture = texture
 
 
 func _on_time_scale_text_changed(new_text):
@@ -300,3 +365,48 @@ func _on_end_time_text_changed(new_text):
 	var end = float(new_text)
 	if(end):
 		end_time = end
+
+
+func _on_key_pos_x_text_changed(new_text):
+	var posx = float(new_text)
+	if(posx):
+		key_pos_x = posx
+		weapon_sprite_ghost.position.x = -posx / 0.03125
+
+
+func _on_key_pos_y_text_changed(new_text):
+	var posy = float(new_text)
+	if(posy):
+		key_pos_y = posy
+		weapon_sprite_ghost.position.y = -posy / 0.03125
+
+
+func _on_key_rot_text_changed(new_text):
+	var rot = float(new_text)
+	if(rot):
+		key_rot = rot
+		weapon_sprite_ghost.rotation_degrees = rot
+
+
+func _on_key_scale_x_text_changed(new_text):
+	var val = float(new_text)
+	if(val):
+		key_scale_x = val
+		weapon_sprite_ghost.scale.x = -val
+
+
+func _on_key_scale_y_text_changed(new_text):
+	var val = float(new_text)
+	if(val):
+		key_scale_x = val
+		weapon_sprite_ghost.scale.y = val
+
+
+func _on_key_length_text_changed(new_text):
+	var val = float(new_text)
+	if(val):
+		key_length = val
+
+
+func _on_color_picker_button_color_changed(color):
+	key_color = color

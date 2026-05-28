@@ -217,7 +217,7 @@ text = "rotation"
 [node name="GlobalRotation" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer" unique_id=1528811574]
 unique_name_in_owner = true
 layout_mode = 2
-text = "0"
+text = "0.0"
 
 [node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer" unique_id=540720733]
 layout_mode = 2
@@ -228,17 +228,103 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "1.0"
 
-[node name="Interpolation" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree" unique_id=2075149586]
+[node name="HBoxContainer7" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=113086214]
+layout_mode = 2
+
+[node name="Interpolation" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer7" unique_id=2075149586]
 layout_mode = 2
 text = "interpolation"
 
-[node name="MirroredAnim" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree" unique_id=1879645071]
+[node name="MirroredAnim" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer7" unique_id=1879645071]
 layout_mode = 2
 text = "mirror animation"
 
 [node name="GunMode" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree" unique_id=500927367]
 layout_mode = 2
 text = "gun mode"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=486518318]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer3" unique_id=1527330083]
+layout_mode = 2
+text = "Key Color Picker"
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer3" unique_id=223959032]
+layout_mode = 2
+text = "Sprite Modulate
+"
+color = Color(1, 1, 1, 1)
+edit_intensity = false
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=947887731]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer4" unique_id=644883875]
+layout_mode = 2
+text = "KeyPosX"
+
+[node name="KeyPosX" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer4" unique_id=1001652700]
+unique_name_in_owner = true
+custom_maximum_size = Vector2(48, -1)
+layout_mode = 2
+text = "0.0"
+
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer4" unique_id=2064712058]
+layout_mode = 2
+text = "KeyPosY"
+
+[node name="KeyPosY" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer4" unique_id=840214005]
+unique_name_in_owner = true
+custom_maximum_size = Vector2(48, -1)
+layout_mode = 2
+text = "0.0"
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=398043567]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer5" unique_id=232487159]
+layout_mode = 2
+text = "KeyScaleX"
+
+[node name="KeyScaleX" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer5" unique_id=1910916943]
+unique_name_in_owner = true
+custom_maximum_size = Vector2(48, -1)
+layout_mode = 2
+text = "1.0"
+
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer5" unique_id=924519741]
+layout_mode = 2
+text = "KeyScaleY"
+
+[node name="KeyScaleY" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer5" unique_id=829251209]
+unique_name_in_owner = true
+custom_maximum_size = Vector2(48, -1)
+layout_mode = 2
+text = "1.0"
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=286015665]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer6" unique_id=893733731]
+layout_mode = 2
+text = "KeyRotation"
+
+[node name="KeyRot" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer6" unique_id=1071534278]
+unique_name_in_owner = true
+custom_maximum_size = Vector2(48, -1)
+layout_mode = 2
+text = "0.0"
+
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer6" unique_id=2121531806]
+layout_mode = 2
+text = "KeyLength"
+
+[node name="KeyLength" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer6" unique_id=942236749]
+unique_name_in_owner = true
+custom_maximum_size = Vector2(48, -1)
+layout_mode = 2
+text = "1.0"
 
 [node name="ClipboardButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree" unique_id=259976229]
 layout_mode = 2
@@ -274,6 +360,16 @@ scale = Vector2(1, -1)
 [node name="WeaponSprite" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=1525792165]
 unique_name_in_owner = true
 texture_filter = 1
+scale = Vector2(-1, -1)
+texture = ExtResource("4_7mycd")
+
+[node name="WeaponSpriteGhost" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=904931349]
+unique_name_in_owner = true
+process_mode = 4
+visible = false
+modulate = Color(0, 1, 0, 0.5254902)
+texture_filter = 1
+scale = Vector2(-1, 1)
 texture = ExtResource("4_7mycd")
 
 [node name="Timeline" type="Control" parent="VBoxContainer" unique_id=2108514053]
@@ -349,7 +445,14 @@ mark_time = 4.5
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/SetSpriteButton" to="." method="_on_set_sprite_button_pressed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/GlobalRotation" to="." method="_on_global_rotation_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/TimeScale" to="." method="_on_time_scale_text_changed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/Interpolation" to="." method="_on_interpolation_pressed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/MirroredAnim" to="." method="_on_mirrored_anim_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer7/Interpolation" to="." method="_on_interpolation_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer7/MirroredAnim" to="." method="_on_mirrored_anim_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/GunMode" to="." method="_on_gun_mode_pressed"]
+[connection signal="color_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer3/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer4/KeyPosX" to="." method="_on_key_pos_x_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer4/KeyPosY" to="." method="_on_key_pos_y_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer5/KeyScaleX" to="." method="_on_key_scale_x_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer5/KeyScaleY" to="." method="_on_key_scale_y_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer6/KeyRot" to="." method="_on_key_rot_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer6/KeyLength" to="." method="_on_key_length_text_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/ClipboardButton" to="." method="_on_clipboard_button_pressed"]
