@@ -20,13 +20,13 @@ func _to_yaml():
     #        time: 0.1
     #        color: "#ffffff2f"
 	#        scale: "1.0, 1.0"
-	string += "      - offsetX: " + str(offsetX).left(4)+"\n"
-	string += "        offsetY: " + str(offsetY).left(4)+"\n"
+	string += "      - offsetX: " + str(snapped(offsetX,0.01))+"\n"
+	string += "        offsetY: " + str(snapped(offsetY,0.01))+"\n"
 	string += "        angle: " + str(int(angle))+"\n"
-	string += "        time: " + str(delta).left(4)+"\n"
+	string += "        time: " + str(snapped(delta,0.01))+"\n"
 	if(color != Color.WHITE):
 		string += '        color: "#' + color.to_html()+'"\n'
 	if(scaleX != 1 || scaleY != 1):
-		string += "        scale: "+str(scaleX).left(3)+", "+str(scaleY).left(3)+"\n"
+		string += "        scale: "+str(snapped(scaleX,0.01))+", "+str(snapped(scaleY,0.01))+"\n"
 	return string
 	

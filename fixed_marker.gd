@@ -12,5 +12,5 @@ func _on_total_length_changed(length):
 	var total_width = anim_key_holder.size.x
 	position.x = total_width*(mark_time/length)
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	pass
