@@ -176,7 +176,7 @@ func _process(delta):
 
 	time += delta * time_scale
 	
-	var total_length = 0.0
+	var total_length = 0.00001
 	for key in keyframes:
 		total_length+=key.delta
 	total_length_label.text = "total length: " + str(total_length)
@@ -321,7 +321,7 @@ func update_animation():
 
 	
 
-	while i < keyframes.size() - 1 and current_time > time_accumulator + current.delta:
+	while i < keyframes.size() - 1 and current_time >= time_accumulator + max(current.delta, 0.00001):
 		time_accumulator += current.delta
 		i += 1
 		current = keyframes[i]
@@ -461,7 +461,7 @@ func parse_data(result):
 	set_total_length()
 
 func set_total_length():
-	var length = 0.0
+	var length = 0.00001
 	for key in keyframes:
 		length+=key.delta
 	#print("total length of all segments: " +str(length))
@@ -637,9 +637,13 @@ func _on_key_text_text_changed(new_text):
 	for i in range(keyframes.size()):
 		if(i<key):
 			time_accumulator += keyframes[i].delta
-	#need this so it always lands on the right keyframe
-	time_accumulator += keyframes[min(key,keyframes.size()-1)].delta/2
-	time = time_accumulator
+	var epsilon := 0.0001
+
+	for i in range(keyframes.size()):
+		if i < key:
+			time_accumulator += max(keyframes[i].delta, epsilon)
+
+	time = time_accumulator + epsilon
 	timer_text.text = str(time_accumulator)
 	_on_timer_text_text_changed(timer_text.text)
 	current_key_changed.emit(selected_key)
