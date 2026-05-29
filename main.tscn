@@ -181,9 +181,23 @@ texture = ExtResource("4_7mycd")
 
 [node name="WeaponSpriteGhost" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=904931349]
 unique_name_in_owner = true
-process_mode = 4
-visible = false
 modulate = Color(0, 1, 0, 0.5254902)
+texture_filter = 1
+scale = Vector2(-1, 1)
+texture = ExtResource("4_7mycd")
+
+[node name="WeaponSpriteGhostPrevious" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=607597104]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.8877676, 0.4727046, 7.70092e-07, 0.78431374)
+texture_filter = 1
+scale = Vector2(-1, 1)
+texture = ExtResource("4_7mycd")
+
+[node name="WeaponSpriteGhostNext" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=76634023]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.8392157, 0, 0.3137255, 0.78431374)
 texture_filter = 1
 scale = Vector2(-1, 1)
 texture = ExtResource("4_7mycd")

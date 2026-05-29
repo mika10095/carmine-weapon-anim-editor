@@ -5,6 +5,8 @@ const TIMELINE_ITEM = preload("uid://cd5nssgom0amw")
 @onready var total_length_label = %TotalLengthLabel
 @onready var weapon_sprite = %WeaponSprite
 @onready var weapon_sprite_ghost = %WeaponSpriteGhost
+@onready var weapon_sprite_ghost_previous = %WeaponSpriteGhostPrevious
+@onready var weapon_sprite_ghost_next = %WeaponSpriteGhostNext
 @onready var rotation_anchor = %RotationAnchor
 @onready var progress_marker = %ProgressMarker
 @onready var anim_key_holder = %AnimKeyHolder
@@ -255,14 +257,22 @@ func redo():
 	restore_state(next)
 
 func copy_key_to_ghost(index):
+	var key :AnimationKey = keyframes[index]
+	var next :AnimationKey = keyframes[min(index+1,keyframes.size()-1)]
+	var previous :AnimationKey = keyframes[max(index-1,0)]
+	if(key.index != next.index):
+		weapon_sprite_ghost_next.visible = true
+		update_ghost_pos(weapon_sprite_ghost_next,next)
+	else:
+		weapon_sprite_ghost_next.visible = false
+	if(key.index != previous.index):
+		weapon_sprite_ghost_previous.visible = true
+		update_ghost_pos(weapon_sprite_ghost_previous,previous)
+	else:
+		weapon_sprite_ghost_previous.visible = false
 	if(!copy_key):
 		return
-	var key :AnimationKey= keyframes[index]
-	weapon_sprite_ghost.position.x = -key.offsetX * 1 / 0.03125
-	weapon_sprite_ghost.position.y = -key.offsetY * 1 / 0.03125
-	weapon_sprite_ghost.rotation_degrees = int(key.angle)
-	weapon_sprite_ghost.scale.x = -key.scaleX
-	weapon_sprite_ghost.scale.y = key.scaleY
+	update_ghost_pos(weapon_sprite_ghost,key)
 	key_pos_x_text.text = str(snapped(-key.offsetX * 1 / 0.03125,0.01))
 	key_pos_y_text.text = str(snapped(-key.offsetY * 1 / 0.03125,0.01))
 	key_rot_text.text = str(int(key.angle))
@@ -271,6 +281,13 @@ func copy_key_to_ghost(index):
 	key_scale_x_text.text = str(key.scaleX)
 	key_scale_y_text.text = str(key.scaleY)
 	color_picker_button.color = key.color
+
+func update_ghost_pos(ghost, animationkey):
+	ghost.position.x = -animationkey.offsetX * 1 / 0.03125
+	ghost.position.y = -animationkey.offsetY * 1 / 0.03125
+	ghost.rotation_degrees = int(animationkey.angle)
+	ghost.scale.x = -animationkey.scaleX
+	ghost.scale.y = animationkey.scaleY
 
 func update_animation():
 	var current_time = time
