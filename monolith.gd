@@ -272,6 +272,9 @@ func redo():
 	restore_state(next)
 
 func copy_key_to_ghost(index):
+	if keyframes.size() == 0:
+		return
+	index = clampi(index,0,keyframes.size()-1)
 	var key :AnimationKey = keyframes[index]
 	var next :AnimationKey = keyframes[min(index+1,keyframes.size()-1)]
 	var previous :AnimationKey = keyframes[max(index-1,0)]
@@ -338,8 +341,6 @@ func update_animation():
 
 	var t = inverse_lerp(segment_start, segment_end, current_time)
 	t = clamp(t, 0.0, 1.0)
-
-	t = t * t * (3.0 - 2.0 * t)
 
 	timer_text.text =  str(snapped(time,0.01))
 	key_text.text = str(i)
@@ -445,6 +446,14 @@ func _yaml_to_data():
 	return parser.parse(yaml_text.text)
 
 func parse_data(result):
+	if typeof(result) != TYPE_DICTIONARY:
+		return
+	if not result.has("animationKeyframes"):
+		return
+	var frames = result.get("animationKeyframes", [])
+	if typeof(frames) != TYPE_ARRAY:
+		return
+
 	for keyframe in result["animationKeyframes"]:
 		var key = AnimationKey.new()
 		key.index = index
