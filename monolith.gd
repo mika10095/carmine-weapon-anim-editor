@@ -77,6 +77,9 @@ func _ready():
 	undo_states.clear()
 	redo_states.clear()
 	save_undo_state()
+	selected_key = 0
+	current_key_changed.emit(selected_key)
+
 	
 func _input(_event):
 	pass
