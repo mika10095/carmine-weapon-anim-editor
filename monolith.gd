@@ -95,8 +95,10 @@ func _process(delta):
 			corrected_movement.y *= -1
 			corrected_movement.x *= -1
 		weapon_sprite_ghost.position += corrected_movement*delta*move_speed
-		key_pos_x_text.text = str(snapped(-weapon_sprite_ghost.position.x * 0.03125,0.01))
-		key_pos_y_text.text = str(snapped(-weapon_sprite_ghost.position.y * 0.03125,0.01))
+		key_pos_x_text.text = str(wrapf(snapped(-weapon_sprite_ghost.position.x / 32,0.01),-2,2))
+		key_pos_y_text.text = str(wrapf(snapped(-weapon_sprite_ghost.position.y / 32,0.01),-2,2))
+		weapon_sprite_ghost.position.x = wrapf(weapon_sprite_ghost.position.x,-64,64)
+		weapon_sprite_ghost.position.y = wrapf(weapon_sprite_ghost.position.y,-64,64)
 	if(rotation_vec != Vector2.ZERO):
 		weapon_sprite_ghost.rotation_degrees += rotation_vec.x*delta*move_speed
 		key_length_text.text = str(max(float(key_length_text.text)+snapped(rotation_vec.y*0.01,0.01),0.0))
