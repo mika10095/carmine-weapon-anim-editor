@@ -87,87 +87,93 @@ func _input(_event):
 	pass
 
 func _process(delta):
-	var movement_vec = Input.get_vector("move_left","move_right","move_up","move_down")
-	var rotation_vec = Input.get_vector("rotate_right", "rotate_left","length_down","length_up")
-	if(movement_vec != Vector2.ZERO):
-		var corrected_movement = movement_vec.rotated(rotation_anchor.global_rotation)
-		corrected_movement.y *= -1
-		if((rotation_anchor.rotation_degrees > 45 && rotation_anchor.rotation_degrees < 135) || (rotation_anchor.rotation_degrees < -45 && rotation_anchor.rotation_degrees > -135)):
+	var focused = get_viewport().gui_get_focus_owner()
+
+	if not(focused is LineEdit or focused is TextEdit):
+		var movement_vec = Input.get_vector("move_left","move_right","move_up","move_down")
+		var rotation_vec = Input.get_vector("rotate_right", "rotate_left","length_down","length_up")
+		if(mirrored):
+			movement_vec.y *= -1
+			rotation_vec.x *= -1
+		if(movement_vec != Vector2.ZERO):
+			var corrected_movement = movement_vec.rotated(rotation_anchor.global_rotation)
 			corrected_movement.y *= -1
-			corrected_movement.x *= -1
-		weapon_sprite_ghost.position += corrected_movement*delta*move_speed
-		key_pos_x_text.text = str(wrapf(snapped(-weapon_sprite_ghost.position.x / 32,0.01),-2,2))
-		key_pos_y_text.text = str(wrapf(snapped(-weapon_sprite_ghost.position.y / 32,0.01),-2,2))
-		weapon_sprite_ghost.position.x = wrapf(weapon_sprite_ghost.position.x,-64,64)
-		weapon_sprite_ghost.position.y = wrapf(weapon_sprite_ghost.position.y,-64,64)
-	if(rotation_vec != Vector2.ZERO):
-		weapon_sprite_ghost.rotation_degrees += rotation_vec.x*delta*move_speed
-		key_length_text.text = str(max(float(key_length_text.text)+snapped(rotation_vec.y*0.01,0.01),0.0))
-	key_rot_text.text = str(snapped(
-	wrapf(weapon_sprite_ghost.rotation_degrees, 0.0, 360.0),
-	0.01
-	))
-		
-	var new_key = AnimationKey.new()
-	new_key.index = index
-	new_key.offsetX = float(key_pos_x_text.text)
-	new_key.offsetY = float(key_pos_y_text.text)
-	new_key.angle = float(key_rot_text.text)
-	new_key.scaleX = float(key_scale_x_text.text)
-	new_key.scaleY = float(key_scale_y_text.text)
-	new_key.color = key_color
-	new_key.delta = float(key_length_text.text)
-	if(Input.is_action_just_pressed("quick_key_place")):
-		new_key.index = selected_key+1
-		keyframes.insert(selected_key+1, new_key)
-		_write_back_keys()
-		_on_parse_pressed()
-		current_key_changed.emit(selected_key+1)
-		update_animation()
-		set_total_length()
-		_on_key_text_text_changed(str(selected_key+1))
-		update_animation()
-		copy_key_to_ghost(selected_key)
-		save_undo_state()
-	elif(Input.is_action_just_pressed("key_modify")):
-		new_key.index = selected_key
-		keyframes.set(selected_key, new_key)
-		_write_back_keys()
-		_on_parse_pressed()
-		current_key_changed.emit(selected_key)
-		update_animation()
-		set_total_length()
-		#copy_key_to_ghost(selected_key)
-		save_undo_state()
-	elif(Input.is_action_just_pressed("next_key")):
-		selected_key=min(selected_key+1,keyframes.size()-1)
-		current_key_changed.emit(selected_key)
-		_on_key_text_text_changed(str(selected_key))
-		update_animation()
-		set_total_length()
-		copy_key_to_ghost(selected_key)
-		save_undo_state()
-	elif(Input.is_action_just_pressed("previous_key")):
-		selected_key=max(selected_key-1,0)
-		current_key_changed.emit(selected_key)
-		_on_key_text_text_changed(str(selected_key))
-		update_animation()
-		set_total_length()
-		copy_key_to_ghost(selected_key)
-		save_undo_state()
-	elif(Input.is_action_just_pressed("delete_key")):
-		if(keyframes.size()>1):
-			keyframes.remove_at(selected_key)
-			selected_key = max(selected_key-1,0)
-		_write_back_keys()
-		_on_parse_pressed()
-		current_key_changed.emit(selected_key)
-		update_animation()
-		set_total_length()
-		_on_key_text_text_changed(str(selected_key))
-		update_animation()
-		copy_key_to_ghost(selected_key)
-		save_undo_state()
+			if((rotation_anchor.rotation_degrees > 45 && rotation_anchor.rotation_degrees < 135) || (rotation_anchor.rotation_degrees < -45 && rotation_anchor.rotation_degrees > -135)):
+				corrected_movement.y *= -1
+				corrected_movement.x *= -1
+			weapon_sprite_ghost.position += corrected_movement*delta*move_speed
+			key_pos_x_text.text = str(wrapf(snapped(-weapon_sprite_ghost.position.x / 32,0.01),-2,2))
+			key_pos_y_text.text = str(wrapf(snapped(-weapon_sprite_ghost.position.y / 32,0.01),-2,2))
+			weapon_sprite_ghost.position.x = wrapf(weapon_sprite_ghost.position.x,-64,64)
+			weapon_sprite_ghost.position.y = wrapf(weapon_sprite_ghost.position.y,-64,64)
+		if(rotation_vec != Vector2.ZERO):
+			weapon_sprite_ghost.rotation_degrees += rotation_vec.x*delta*move_speed
+			key_length_text.text = str(max(float(key_length_text.text)+snapped(rotation_vec.y*0.01,0.01),0.0))
+		key_rot_text.text = str(snapped(
+		wrapf(weapon_sprite_ghost.rotation_degrees, 0.0, 360.0),
+		0.01
+		))
+			
+		var new_key = AnimationKey.new()
+		new_key.index = index
+		new_key.offsetX = float(key_pos_x_text.text)
+		new_key.offsetY = float(key_pos_y_text.text)
+		new_key.angle = float(key_rot_text.text)
+		new_key.scaleX = float(key_scale_x_text.text)
+		new_key.scaleY = float(key_scale_y_text.text)
+		new_key.color = key_color
+		new_key.delta = float(key_length_text.text)
+		if(Input.is_action_just_pressed("quick_key_place")):
+			new_key.index = selected_key+1
+			keyframes.insert(selected_key+1, new_key)
+			_write_back_keys()
+			_on_parse_pressed()
+			current_key_changed.emit(selected_key+1)
+			update_animation()
+			set_total_length()
+			_on_key_text_text_changed(str(selected_key+1))
+			update_animation()
+			copy_key_to_ghost(selected_key)
+			save_undo_state()
+		elif(Input.is_action_just_pressed("key_modify")):
+			new_key.index = selected_key
+			keyframes.set(selected_key, new_key)
+			_write_back_keys()
+			_on_parse_pressed()
+			current_key_changed.emit(selected_key)
+			update_animation()
+			set_total_length()
+			#copy_key_to_ghost(selected_key)
+			save_undo_state()
+		elif(Input.is_action_just_pressed("next_key")):
+			selected_key=min(selected_key+1,keyframes.size()-1)
+			current_key_changed.emit(selected_key)
+			_on_key_text_text_changed(str(selected_key))
+			update_animation()
+			set_total_length()
+			copy_key_to_ghost(selected_key)
+			save_undo_state()
+		elif(Input.is_action_just_pressed("previous_key")):
+			selected_key=max(selected_key-1,0)
+			current_key_changed.emit(selected_key)
+			_on_key_text_text_changed(str(selected_key))
+			update_animation()
+			set_total_length()
+			copy_key_to_ghost(selected_key)
+			save_undo_state()
+		elif(Input.is_action_just_pressed("delete_key")):
+			if(keyframes.size()>1):
+				keyframes.remove_at(selected_key)
+				selected_key = max(selected_key-1,0)
+			_write_back_keys()
+			_on_parse_pressed()
+			current_key_changed.emit(selected_key)
+			update_animation()
+			set_total_length()
+			_on_key_text_text_changed(str(selected_key))
+			update_animation()
+			copy_key_to_ghost(selected_key)
+			save_undo_state()
 	if(!playing):
 		return
 	
@@ -429,8 +435,10 @@ func _on_parse_pressed():
 	_write_back_keys() 
 	set_total_length()
 	await get_tree().process_frame
-	yaml_text.release_focus()
-	get_viewport().gui_release_focus()
+	selected_key = min(selected_key,keyframes.size()-1)
+	current_key_changed.emit(selected_key)
+	copy_key_to_ghost(selected_key)
+	update_animation()
 
 func _yaml_to_data():
 	var parser = YAMLParser.new()
@@ -472,16 +480,10 @@ func set_total_length():
 
 func _on_anim_button_pressed():
 	if(!playing):
-		weapon_sprite_ghost.visible = true
-		weapon_sprite_ghost.process_mode = Node.PROCESS_MODE_ALWAYS
 		playing = true
-		time = 0.0
 		anim_button.text = "Stop"
 	else:
-		weapon_sprite_ghost.visible = true
-		weapon_sprite_ghost.process_mode = Node.PROCESS_MODE_ALWAYS
 		playing = false
-		time = 0.0
 		anim_button.text = "Play"
 
 func _on_global_rotation_text_changed(new_text):
@@ -537,6 +539,7 @@ func _on_interpolation_pressed():
 
 func _on_mirrored_anim_pressed():
 	mirrored = not mirrored
+	update_animation()
 
 func _on_gun_mode_pressed():
 	gunmode = not gunmode #unused for now
@@ -631,23 +634,22 @@ func _on_timer_text_text_changed(new_text):
 func _on_key_text_text_changed(new_text):
 	if !new_text.is_valid_int():
 		return
-	var key = int(new_text)
+
+	var key = clamp(int(new_text), 0, keyframes.size() - 1)
+
 	selected_key = key
-	var time_accumulator = 0
-	for i in range(keyframes.size()):
-		if(i<key):
-			time_accumulator += keyframes[i].delta
+
 	var epsilon := 0.0001
+	var accumulated_time := 0.0
 
-	for i in range(keyframes.size()):
-		if i < key:
-			time_accumulator += max(keyframes[i].delta, epsilon)
+	for i in range(key):
+		accumulated_time += max(keyframes[i].delta, epsilon)
 
-	time = time_accumulator + epsilon
-	timer_text.text = str(time_accumulator)
-	_on_timer_text_text_changed(timer_text.text)
+	time = accumulated_time
+	timer_text.text = str(snapped(time, 0.0001))
 	current_key_changed.emit(selected_key)
 	copy_key_to_ghost(selected_key)
+	update_animation()
 
 func _on_copy_key_toggle_pressed():
 	copy_key = !copy_key

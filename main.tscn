@@ -106,16 +106,22 @@ action = &"quick_right_rotate"
 events = [SubResource("InputEventAction_dg77c")]
 
 [sub_resource type="InputEventAction" id="InputEventAction_jg3b2"]
-action = &"undo"
+action = &"ui_undo"
 
 [sub_resource type="Shortcut" id="Shortcut_gxbgy"]
 events = [SubResource("InputEventAction_jg3b2")]
 
 [sub_resource type="InputEventAction" id="InputEventAction_k4vqa"]
-action = &"redo"
+action = &"ui_redo"
 
 [sub_resource type="Shortcut" id="Shortcut_uek5b"]
 events = [SubResource("InputEventAction_k4vqa")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_4c57u"]
+action = &"ui_copy"
+
+[sub_resource type="Shortcut" id="Shortcut_kek77"]
+events = [SubResource("InputEventAction_4c57u")]
 
 [node name="Editor" type="Control" unique_id=1551929522]
 layout_mode = 3
@@ -218,6 +224,7 @@ texture = ExtResource("4_7mycd")
 custom_minimum_size = Vector2(256, 200)
 layout_mode = 2
 size_flags_horizontal = 3
+focus_mode = 1
 theme = ExtResource("2_272bh")
 
 [node name="AnimButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree" unique_id=418496892]
@@ -508,6 +515,7 @@ text = "Process"
 
 [node name="ClipboardButton" type="Button" parent="VBoxContainer/HBoxContainer/Control/VBoxContainer" unique_id=259976229]
 layout_mode = 2
+shortcut = SubResource("Shortcut_kek77")
 text = "Export to clipboard"
 
 [node name="Timeline" type="Control" parent="VBoxContainer" unique_id=2108514053]
