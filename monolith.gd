@@ -420,7 +420,7 @@ func apply_interpolated_frame(a, b, t, i):
 
 	weapon_sprite.modulate = a.color.lerp(b.color, t)
 
-func _on_parse_pressed():
+func _on_parse_pressed(): #TODO fix lockout bug when importing 1 thing with 0 length
 	keyframes.clear()
 	for child in anim_key_holder.get_children():
 		child.queue_free()
@@ -428,6 +428,9 @@ func _on_parse_pressed():
 	parse_data(_yaml_to_data())
 	_write_back_keys() 
 	set_total_length()
+	await get_tree().process_frame
+	yaml_text.release_focus()
+	get_viewport().gui_release_focus()
 
 func _yaml_to_data():
 	var parser = YAMLParser.new()
@@ -520,6 +523,8 @@ func _on_sprite_file_selected(path: String):
 
 	weapon_sprite.texture = texture
 	weapon_sprite_ghost.texture = texture
+	weapon_sprite_ghost_next.texture = texture
+	weapon_sprite_ghost_previous.texture = texture
 
 func _on_time_scale_text_changed(new_text):
 	var tscale = float(new_text)
@@ -541,8 +546,10 @@ func _on_clipboard_button_pressed():
 	var text = ""
 	text += "animationKeyframes:\n"
 	var init_key = keyframes[0]
-	init_key.delta = 0 
+	var delta = init_key.delta
+	init_key.delta = 0
 	text += init_key._to_yaml()
+	init_key.delta = delta
 	for key in keyframes:
 		text += key._to_yaml()
 	DisplayServer.clipboard_set(text)
@@ -630,7 +637,8 @@ func _on_key_text_text_changed(new_text):
 	for i in range(keyframes.size()):
 		if(i<key):
 			time_accumulator += keyframes[i].delta
-	time_accumulator += keyframes[min(key,keyframes.size()-1)].delta
+	#need this so it always lands on the right keyframe
+	time_accumulator += keyframes[min(key,keyframes.size()-1)].delta/2
 	time = time_accumulator
 	timer_text.text = str(time_accumulator)
 	_on_timer_text_text_changed(timer_text.text)
