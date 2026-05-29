@@ -50,6 +50,7 @@ var interpolated = false
 var mirrored = false
 var gunmode = false
 var copy_key = false
+var key_visuals = true
 var start_time = 0.0
 var end_time = 0.0
 var move_speed = 50
@@ -275,6 +276,9 @@ func copy_key_to_ghost(index):
 		update_ghost_pos(weapon_sprite_ghost_previous,previous)
 	else:
 		weapon_sprite_ghost_previous.visible = false
+	if(!key_visuals):
+		weapon_sprite_ghost_previous.visible = false
+		weapon_sprite_ghost_next.visible = false
 	if(!copy_key):
 		return
 	update_ghost_pos(weapon_sprite_ghost,key)
@@ -439,7 +443,7 @@ func _on_parse_pressed():
 		child.queue_free()
 	index = 0
 	parse_data(_yaml_to_data())
-	_write_back_keys() #fix angles and the spinny bug
+	_write_back_keys() 
 	set_total_length()
 
 	
@@ -672,3 +676,8 @@ func _on_undo_button_pressed():
 
 func _on_redo_button_pressed():
 	redo()
+
+
+func _on_key_visualiser_toggle_pressed():
+	key_visuals = !key_visuals
+	update_animation()

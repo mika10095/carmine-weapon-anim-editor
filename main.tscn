@@ -379,9 +379,17 @@ custom_maximum_size = Vector2(48, -1)
 layout_mode = 2
 text = "0.1"
 
-[node name="CopyKeyToggle" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree" unique_id=444534389]
+[node name="HBoxContainer10" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=403224365]
+layout_mode = 2
+
+[node name="CopyKeyToggle" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer10" unique_id=444534389]
 layout_mode = 2
 text = "Copy Selected Key"
+
+[node name="KeyVisualiserToggle" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer10" unique_id=908733071]
+layout_mode = 2
+button_pressed = true
+text = "Key Visuals"
 
 [node name="HBoxContainer9" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=1633056803]
 layout_mode = 2
@@ -563,7 +571,8 @@ mark_time = 4.5
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer5/KeyScaleY" to="." method="_on_key_scale_y_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer6/KeyRot" to="." method="_on_key_rot_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer6/KeyLength" to="." method="_on_key_length_text_changed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/CopyKeyToggle" to="." method="_on_copy_key_toggle_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer10/CopyKeyToggle" to="." method="_on_copy_key_toggle_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer10/KeyVisualiserToggle" to="." method="_on_key_visualiser_toggle_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer9/UndoButton" to="." method="_on_undo_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer9/RedoButton" to="." method="_on_redo_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Control/VBoxContainer/Button" to="." method="_on_parse_pressed"]
