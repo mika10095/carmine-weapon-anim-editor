@@ -75,10 +75,15 @@ func _write_back_keys():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	var movement_vec = Input.get_vector("move_right","move_left","move_up","move_down")
+	var movement_vec = Input.get_vector("move_left","move_right","move_up","move_down")
 	var rotation_vec = Input.get_vector("rotate_right", "rotate_left","length_down","length_up")
 	if(movement_vec):
-		weapon_sprite_ghost.position += movement_vec*delta*move_speed
+		var corrected_movement = movement_vec.rotated(rotation_anchor.global_rotation)
+		corrected_movement.y *= -1
+		if(rotation_anchor.rotation_degrees > 45 && rotation_anchor.rotation_degrees < 135 || rotation_anchor.rotation_degrees < -45 && rotation_anchor.rotation_degrees > -135):
+			corrected_movement.y *= -1
+			corrected_movement.x *= -1
+		weapon_sprite_ghost.position += corrected_movement*delta*move_speed
 		key_pos_x_text.text = str(snapped(-weapon_sprite_ghost.position.x * 0.03125,0.01))
 		key_pos_y_text.text = str(snapped(-weapon_sprite_ghost.position.y * 0.03125,0.01))
 	if(rotation_vec):
@@ -129,12 +134,13 @@ func _process(delta):
 	elif(Input.is_action_just_pressed("delete_key")):
 		if(keyframes.size()>1):
 			keyframes.remove_at(selected_key)
+			selected_key = max(selected_key-1,0)
 		_write_back_keys()
 		_on_parse_pressed()
-		current_key_changed.emit(max(selected_key-1,0))
+		current_key_changed.emit(selected_key)
 		update_animation()
 		set_total_length()
-		_on_key_text_text_changed(max(selected_key-1,0))
+		_on_key_text_text_changed(selected_key)
 		update_animation()
 	if(!playing):
 		return
@@ -353,16 +359,16 @@ func _on_anim_button_pressed():
 
 func _on_global_rotation_text_changed(new_text):
 	var rot:float = float(new_text)
-	wrapf(rot,0,360)
+	rot = wrapf(rot,0,360)
 	rotation_anchor.global_rotation_degrees = rot
-	if rot >= -45 and rot < 45:
-		urist.frame = 4
+	if rot >= 315 or rot < 45:
+		urist.frame = 4 
 	elif rot >= 45 and rot < 135:
 		urist.frame = 7
-	elif rot >= -135 and rot < -45:
-		urist.frame = 6
+	elif rot >= 135 and rot < 225:
+		urist.frame = 5 
 	else:
-		urist.frame = 5
+		urist.frame = 6
 
 
 func _on_set_sprite_button_pressed():

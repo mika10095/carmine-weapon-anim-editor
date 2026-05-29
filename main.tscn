@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://q14md7vy154d" path="res://human.png" id="2_h2yge"]
 [ext_resource type="Texture2D" uid="uid://ir5u041hjb6f" path="res://knife.png" id="4_7mycd"]
 [ext_resource type="Texture2D" uid="uid://dbr3cdmmpudke" path="res://help.png" id="4_lquwl"]
+[ext_resource type="Texture2D" uid="uid://dr22lqqg10liy" path="res://circle.png" id="6_5vw27"]
 [ext_resource type="Script" uid="uid://coy6eo755wnfk" path="res://fixed_marker.gd" id="6_7mycd"]
 
 [sub_resource type="Theme" id="Theme_i63ai"]
@@ -86,6 +87,12 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="InputEventAction" id="InputEventAction_wxtjm"]
+action = &"quick_play"
+
+[sub_resource type="Shortcut" id="Shortcut_hh2x1"]
+events = [SubResource("InputEventAction_wxtjm")]
+
 [node name="Editor" type="Control" unique_id=1551929522]
 layout_mode = 3
 anchors_preset = 15
@@ -129,11 +136,18 @@ handle_input_locally = false
 render_target_update_mode = 4
 
 [node name="Node2D" type="Node2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport" unique_id=1212014700]
+texture_filter = 1
 
 [node name="Background" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D" unique_id=746700304]
 position = Vector2(256, 256)
 scale = Vector2(4, 4)
 texture = SubResource("NoiseTexture2D_dyaj1")
+
+[node name="Circle" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D" unique_id=786356523]
+texture_filter = 1
+position = Vector2(256, 256)
+scale = Vector2(4, -4)
+texture = ExtResource("6_5vw27")
 
 [node name="Urist" type="AnimatedSprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D" unique_id=20596149]
 unique_name_in_owner = true
@@ -170,6 +184,7 @@ theme = ExtResource("2_272bh")
 
 [node name="AnimButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree" unique_id=418496892]
 layout_mode = 2
+shortcut = SubResource("Shortcut_hh2x1")
 text = "Play"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=801280974]
@@ -424,7 +439,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.50491595, 0.5540918, 0.5903954, 1)
+color = Color(0, 0, 0, 1)
 
 [node name="AnimKeyHolder" type="HBoxContainer" parent="VBoxContainer/Timeline" unique_id=226551329]
 unique_name_in_owner = true

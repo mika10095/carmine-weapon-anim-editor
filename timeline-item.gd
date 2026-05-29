@@ -24,6 +24,6 @@ func _on_total_length_changed(item_count):
 
 func _on_key_changed(key):
 	if index_label.text == str(key):
-		color = Color.DARK_GREEN
+		color = Color.YELLOW_GREEN
 	else:
 		color = Color.REBECCA_PURPLE

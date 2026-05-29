@@ -7,7 +7,7 @@ custom_minimum_size = Vector2(16, 0)
 offset_right = 32.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-color = Color(9.241105e-06, 0.6413732, 0.86247224, 1)
+color = Color(0.55800074, 0.032952044, 0.99913675, 1)
 script = ExtResource("1_hh2x1")
 
 [node name="IndexLabel" type="Label" parent="." unique_id=314528487]
