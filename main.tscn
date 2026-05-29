@@ -2,10 +2,16 @@
 
 [ext_resource type="Script" uid="uid://cbkpw7de2kiib" path="res://monolith.gd" id="1_h2yge"]
 [ext_resource type="PackedScene" uid="uid://cd5nssgom0amw" path="res://timeline-item.tscn" id="2_1bvp3"]
+[ext_resource type="Theme" uid="uid://l7q0urw57h27" path="res://awesome_theme.tres" id="2_272bh"]
 [ext_resource type="Texture2D" uid="uid://q14md7vy154d" path="res://human.png" id="2_h2yge"]
 [ext_resource type="Texture2D" uid="uid://ir5u041hjb6f" path="res://knife.png" id="4_7mycd"]
 [ext_resource type="Texture2D" uid="uid://dbr3cdmmpudke" path="res://help.png" id="4_lquwl"]
 [ext_resource type="Script" uid="uid://coy6eo755wnfk" path="res://fixed_marker.gd" id="6_7mycd"]
+
+[sub_resource type="Theme" id="Theme_i63ai"]
+Button/colors/icon_normal_color = Color(1, 1, 1, 1)
+
+[sub_resource type="Theme" id="Theme_272bh"]
 
 [sub_resource type="Gradient" id="Gradient_uek5b"]
 colors = PackedColorArray(0.7382431, 0.2183398, 1, 1, 0, 0, 0, 1)
@@ -85,8 +91,13 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -21.0
+offset_top = 1.0
+offset_right = 22.0
+offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_i63ai")
 script = ExtResource("1_h2yge")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1370203135]
@@ -102,78 +113,60 @@ offset_right = 541.5
 offset_bottom = 322.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_272bh")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=801354064]
 layout_mode = 2
+theme = ExtResource("2_272bh")
 
-[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer" unique_id=1860517993]
-custom_minimum_size = Vector2(307, 256)
+[node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/HBoxContainer" unique_id=1247340886]
 layout_mode = 2
+size_flags_horizontal = 8
+theme = SubResource("Theme_272bh")
 
-[node name="YAMLText" type="TextEdit" parent="VBoxContainer/HBoxContainer/Control" unique_id=608866183]
+[node name="SubViewport" type="SubViewport" parent="VBoxContainer/HBoxContainer/SubViewportContainer" unique_id=496707105]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="Node2D" type="Node2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport" unique_id=1212014700]
+
+[node name="Background" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D" unique_id=746700304]
+position = Vector2(256, 256)
+scale = Vector2(4, 4)
+texture = SubResource("NoiseTexture2D_dyaj1")
+
+[node name="Urist" type="AnimatedSprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D" unique_id=20596149]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(256, 256)
-layout_mode = 0
-offset_right = 307.0
-offset_bottom = 512.0
-text = "animationKeyframes:
-      - offsetX: 0.5 #medium start
-        offsetY: -0.1
-        angle: -60
-        time: 0.0
-      - offsetX: 0.7 #windup 1
-        offsetY: -0.1
-        angle: 40
-        time: 0.1
-      - offsetX: 1 #windup 2
-        offsetY: 0.5
-        angle: 40
-        time: 0.1
-      - offsetX: 0.5 #swing START
-        offsetY: -0.7
-        angle: -90
-        time: 0.05
-      - offsetX: -0.2
-        offsetY: -1
-        angle: -150
-        time: 0.05
-      - offsetX: -0.7 #swing END
-        offsetY: -0.7
-        angle: -180
-        time: 0.05
-      - offsetX: -0.7 #post-swing fadeout
-        offsetY: -0.7
-        angle: -190
-        time: 0.02
-        color: \"#ffffffd1\"
-      - offsetX: -0.8
-        offsetY: -0.5
-        angle: -200
-        time: 0.02
-        color: \"#ffffff4c\"
-      - offsetX: -0.9
-        offsetY: -0.4
-        angle: -210
-        time: 0.02
-        color: \"#ffffff81\"
-      - offsetX: -1
-        offsetY: -0.3
-        angle: -220
-        time: 0.1
-        color: \"#ffffff2f\""
+texture_filter = 1
+position = Vector2(256, 256)
+scale = Vector2(4, 4)
+sprite_frames = SubResource("SpriteFrames_gxbgy")
+frame = 4
+
+[node name="RotationAnchor" type="Node2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist" unique_id=220633843]
+unique_name_in_owner = true
+scale = Vector2(1, -1)
+
+[node name="WeaponSprite" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=1525792165]
+unique_name_in_owner = true
+texture_filter = 1
+scale = Vector2(-1, -1)
+texture = ExtResource("4_7mycd")
+
+[node name="WeaponSpriteGhost" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=904931349]
+unique_name_in_owner = true
+process_mode = 4
+visible = false
+modulate = Color(0, 1, 0, 0.5254902)
+texture_filter = 1
+scale = Vector2(-1, 1)
+texture = ExtResource("4_7mycd")
 
 [node name="Tree" type="VBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=1041799673]
-custom_minimum_size = Vector2(256, 256)
+custom_minimum_size = Vector2(256, 200)
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer/Tree" unique_id=1344403789]
-layout_mode = 2
-text = "Process"
-
-[node name="TotalLengthLabel" type="Label" parent="VBoxContainer/HBoxContainer/Tree" unique_id=2122996338]
-layout_mode = 2
-text = "total length: 0.0"
+theme = ExtResource("2_272bh")
 
 [node name="AnimButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree" unique_id=418496892]
 layout_mode = 2
@@ -218,10 +211,6 @@ text = "key"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
-
-[node name="CurrentTimeLabel" type="Label" parent="VBoxContainer/HBoxContainer/Tree" unique_id=2064639092]
-layout_mode = 2
-text = "time 0.00 key 0"
 
 [node name="SetSpriteButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree" unique_id=1781176264]
 layout_mode = 2
@@ -348,51 +337,81 @@ custom_maximum_size = Vector2(48, -1)
 layout_mode = 2
 text = "0.1"
 
-[node name="ClipboardButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree" unique_id=259976229]
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer" unique_id=1860517993]
+custom_minimum_size = Vector2(307, 256)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/Control" unique_id=1459730217]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TotalLengthLabel" type="Label" parent="VBoxContainer/HBoxContainer/Control/VBoxContainer" unique_id=2122996338]
+unique_name_in_owner = true
+layout_mode = 2
+text = "total length: 0.0"
+
+[node name="YAMLText" type="TextEdit" parent="VBoxContainer/HBoxContainer/Control/VBoxContainer" unique_id=608866183]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+size_flags_vertical = 3
+text = "animationKeyframes:
+      - offsetX: 0.5 #medium start
+        offsetY: -0.1
+        angle: -60
+        time: 0.0
+      - offsetX: 0.7 #windup 1
+        offsetY: -0.1
+        angle: 40
+        time: 0.1
+      - offsetX: 1 #windup 2
+        offsetY: 0.5
+        angle: 40
+        time: 0.1
+      - offsetX: 0.5 #swing START
+        offsetY: -0.7
+        angle: -90
+        time: 0.05
+      - offsetX: -0.2
+        offsetY: -1
+        angle: -150
+        time: 0.05
+      - offsetX: -0.7 #swing END
+        offsetY: -0.7
+        angle: -180
+        time: 0.05
+      - offsetX: -0.7 #post-swing fadeout
+        offsetY: -0.7
+        angle: -190
+        time: 0.02
+        color: \"#ffffffd1\"
+      - offsetX: -0.8
+        offsetY: -0.5
+        angle: -200
+        time: 0.02
+        color: \"#ffffff4c\"
+      - offsetX: -0.9
+        offsetY: -0.4
+        angle: -210
+        time: 0.02
+        color: \"#ffffff81\"
+      - offsetX: -1
+        offsetY: -0.3
+        angle: -220
+        time: 0.1
+        color: \"#ffffff2f\""
+
+[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer/Control/VBoxContainer" unique_id=1344403789]
+layout_mode = 2
+text = "Process"
+
+[node name="ClipboardButton" type="Button" parent="VBoxContainer/HBoxContainer/Control/VBoxContainer" unique_id=259976229]
 layout_mode = 2
 text = "Export to clipboard"
-
-[node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/HBoxContainer" unique_id=1247340886]
-custom_minimum_size = Vector2(512, 512)
-layout_mode = 2
-
-[node name="SubViewport" type="SubViewport" parent="VBoxContainer/HBoxContainer/SubViewportContainer" unique_id=496707105]
-handle_input_locally = false
-render_target_update_mode = 4
-
-[node name="Node2D" type="Node2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport" unique_id=1212014700]
-
-[node name="Background" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D" unique_id=746700304]
-position = Vector2(256, 256)
-scale = Vector2(4, 4)
-texture = SubResource("NoiseTexture2D_dyaj1")
-
-[node name="Urist" type="AnimatedSprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D" unique_id=20596149]
-unique_name_in_owner = true
-texture_filter = 1
-position = Vector2(256, 256)
-scale = Vector2(4, 4)
-sprite_frames = SubResource("SpriteFrames_gxbgy")
-frame = 4
-
-[node name="RotationAnchor" type="Node2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist" unique_id=220633843]
-unique_name_in_owner = true
-scale = Vector2(1, -1)
-
-[node name="WeaponSprite" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=1525792165]
-unique_name_in_owner = true
-texture_filter = 1
-scale = Vector2(-1, -1)
-texture = ExtResource("4_7mycd")
-
-[node name="WeaponSpriteGhost" type="Sprite2D" parent="VBoxContainer/HBoxContainer/SubViewportContainer/SubViewport/Node2D/Urist/RotationAnchor" unique_id=904931349]
-unique_name_in_owner = true
-process_mode = 4
-visible = false
-modulate = Color(0, 1, 0, 0.5254902)
-texture_filter = 1
-scale = Vector2(-1, 1)
-texture = ExtResource("4_7mycd")
 
 [node name="Timeline" type="Control" parent="VBoxContainer" unique_id=2108514053]
 custom_minimum_size = Vector2(32, 128)
@@ -432,7 +451,7 @@ color = Color(1, 0, 0, 1)
 layout_mode = 0
 offset_right = 10.0
 offset_bottom = 32.0
-color = Color(1, 0.69411767, 0, 1)
+color = Color(0, 0, 0, 1)
 script = ExtResource("6_7mycd")
 mark_time = 1.0
 
@@ -440,7 +459,7 @@ mark_time = 1.0
 layout_mode = 0
 offset_right = 10.0
 offset_bottom = 32.0
-color = Color(1, 0.69411767, 0, 1)
+color = Color(0, 0, 0, 1)
 script = ExtResource("6_7mycd")
 mark_time = 2.0
 
@@ -448,7 +467,7 @@ mark_time = 2.0
 layout_mode = 0
 offset_right = 10.0
 offset_bottom = 32.0
-color = Color(1, 0.69411767, 0, 1)
+color = Color(0, 0, 0, 1)
 script = ExtResource("6_7mycd")
 mark_time = 3.0
 
@@ -456,11 +475,10 @@ mark_time = 3.0
 layout_mode = 0
 offset_right = 10.0
 offset_bottom = 32.0
-color = Color(1, 0.69411767, 0, 1)
+color = Color(0, 0, 0, 1)
 script = ExtResource("6_7mycd")
 mark_time = 4.5
 
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/Button" to="." method="_on_parse_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/AnimButton" to="." method="_on_anim_button_pressed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer2/StartTime" to="." method="_on_start_time_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer2/EndTime" to="." method="_on_end_time_text_changed"]
@@ -479,4 +497,5 @@ mark_time = 4.5
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer5/KeyScaleY" to="." method="_on_key_scale_y_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer6/KeyRot" to="." method="_on_key_rot_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer6/KeyLength" to="." method="_on_key_length_text_changed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/ClipboardButton" to="." method="_on_clipboard_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Control/VBoxContainer/Button" to="." method="_on_parse_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Control/VBoxContainer/ClipboardButton" to="." method="_on_clipboard_button_pressed"]

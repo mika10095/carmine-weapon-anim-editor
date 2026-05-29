@@ -2,8 +2,7 @@ extends Control
 @onready var yaml_text = %YAMLText
 const TIMELINE_ITEM = preload("uid://cd5nssgom0amw")
 @onready var anim_button = $VBoxContainer/HBoxContainer/Tree/AnimButton
-@onready var total_length_label = $VBoxContainer/HBoxContainer/Tree/TotalLengthLabel
-@onready var current_time_label = $VBoxContainer/HBoxContainer/Tree/CurrentTimeLabel
+@onready var total_length_label = %TotalLengthLabel
 @onready var weapon_sprite = %WeaponSprite
 @onready var weapon_sprite_ghost = %WeaponSpriteGhost
 @onready var rotation_anchor = %RotationAnchor
@@ -59,7 +58,7 @@ func _ready():
 	_write_back_keys()
 	_on_parse_pressed()
 	_on_anim_button_pressed()
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.25).timeout
 	_write_back_keys()
 	_on_parse_pressed()
 	_on_anim_button_pressed()
@@ -77,13 +76,14 @@ func _write_back_keys():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var movement_vec = Input.get_vector("move_right","move_left","move_up","move_down")
-	var rotation_vec = Input.get_vector("rotate_right", "rotate_left","length_up","length_down")
+	var rotation_vec = Input.get_vector("rotate_right", "rotate_left","length_down","length_up")
 	if(movement_vec):
 		weapon_sprite_ghost.position += movement_vec*delta*move_speed
 		key_pos_x_text.text = str(snapped(-weapon_sprite_ghost.position.x * 0.03125,0.01))
 		key_pos_y_text.text = str(snapped(-weapon_sprite_ghost.position.y * 0.03125,0.01))
 	if(rotation_vec):
 		weapon_sprite_ghost.rotation_degrees += rotation_vec.x*delta*move_speed
+		key_length_text.text = str(max(float(key_length_text.text)+snapped(rotation_vec.y*0.01,0.01),0.0))
 	weapon_sprite_ghost.rotation_degrees = wrapf(weapon_sprite_ghost.rotation_degrees,0,360.0) # TODO fix the spinny bug
 	key_rot_text.text = str(snapped(weapon_sprite_ghost.rotation_degrees,0.01))
 		
@@ -114,7 +114,28 @@ func _process(delta):
 		current_key_changed.emit(selected_key)
 		update_animation()
 		set_total_length()
-		
+	elif(Input.is_action_just_pressed("next_key")):
+		selected_key=min(selected_key+1,keyframes.size()-1)
+		current_key_changed.emit(selected_key)
+		_on_key_text_text_changed(str(selected_key))
+		update_animation()
+		set_total_length()
+	elif(Input.is_action_just_pressed("previous_key")):
+		selected_key=max(selected_key-1,0)
+		current_key_changed.emit(selected_key)
+		_on_key_text_text_changed(str(selected_key))
+		update_animation()
+		set_total_length()
+	elif(Input.is_action_just_pressed("delete_key")):
+		if(keyframes.size()>1):
+			keyframes.remove_at(selected_key)
+		_write_back_keys()
+		_on_parse_pressed()
+		current_key_changed.emit(max(selected_key-1,0))
+		update_animation()
+		set_total_length()
+		_on_key_text_text_changed(max(selected_key-1,0))
+		update_animation()
 	if(!playing):
 		return
 	
@@ -176,7 +197,9 @@ func update_animation():
 
 	t = t * t * (3.0 - 2.0 * t)
 
-	current_time_label.text = "time " + str(time).substr(0, 4) + " key " + str(i)
+	timer_text.text =  str(snapped(time,0.01))
+	key_text.text = str(i)
+	
 	current_key_changed.emit(i)
 	selected_key = i
 	apply_interpolated_frame(current, next, t, i)
