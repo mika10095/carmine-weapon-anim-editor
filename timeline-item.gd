@@ -20,7 +20,7 @@ func _on_total_length_changed(item_count):
 	await get_tree().process_frame
 	var total_width = anim_key_holder.size.x-200
 	custom_minimum_size.x = total_width*(length/item_count)
-	print("new length for "+ index_label.text+" "+ str(size.x))
+	#print("new length for "+ index_label.text+" "+ str(size.x))
 
 func _on_key_changed(key):
 	if index_label.text == str(key):

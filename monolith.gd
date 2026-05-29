@@ -48,7 +48,7 @@ var playing := false
 var time_scale := 1.0
 var interpolated := false
 var mirrored := false
-var gunmode := false
+var gunmode := false #unused for now
 var copy_key := false
 var key_visuals := true
 var start_time := 0.0
@@ -88,16 +88,16 @@ func _input(_event):
 func _process(delta):
 	var movement_vec = Input.get_vector("move_left","move_right","move_up","move_down")
 	var rotation_vec = Input.get_vector("rotate_right", "rotate_left","length_down","length_up")
-	if(movement_vec):
+	if(movement_vec != Vector2.ZERO):
 		var corrected_movement = movement_vec.rotated(rotation_anchor.global_rotation)
 		corrected_movement.y *= -1
-		if(rotation_anchor.rotation_degrees > 45 && rotation_anchor.rotation_degrees < 135 || rotation_anchor.rotation_degrees < -45 && rotation_anchor.rotation_degrees > -135):
+		if((rotation_anchor.rotation_degrees > 45 && rotation_anchor.rotation_degrees < 135) || (rotation_anchor.rotation_degrees < -45 && rotation_anchor.rotation_degrees > -135)):
 			corrected_movement.y *= -1
 			corrected_movement.x *= -1
 		weapon_sprite_ghost.position += corrected_movement*delta*move_speed
 		key_pos_x_text.text = str(snapped(-weapon_sprite_ghost.position.x * 0.03125,0.01))
 		key_pos_y_text.text = str(snapped(-weapon_sprite_ghost.position.y * 0.03125,0.01))
-	if(rotation_vec):
+	if(rotation_vec != Vector2.ZERO):
 		weapon_sprite_ghost.rotation_degrees += rotation_vec.x*delta*move_speed
 		key_length_text.text = str(max(float(key_length_text.text)+snapped(rotation_vec.y*0.01,0.01),0.0))
 	key_rot_text.text = str(snapped(
@@ -161,7 +161,7 @@ func _process(delta):
 		current_key_changed.emit(selected_key)
 		update_animation()
 		set_total_length()
-		_on_key_text_text_changed(selected_key)
+		_on_key_text_text_changed(str(selected_key))
 		update_animation()
 		copy_key_to_ghost(selected_key)
 		save_undo_state()
@@ -384,38 +384,21 @@ func apply_interpolated_frame(a, b, t, i):
 	var pos_x
 	var pos_y
 
-	if gunmode:
-		pos_x = cubic_interp(
-			p0.offsetX,
-			p1.offsetX,
-			p2.offsetX,
-			p3.offsetX,
-			t
-		)
+	pos_x = cubic_interp(
+		-p0.offsetX,
+		-p1.offsetX,
+		-p2.offsetX,
+		-p3.offsetX,
+		t
+	)
 
-		pos_y = cubic_interp(
-			-p0.offsetY,
-			-p1.offsetY,
-			-p2.offsetY,
-			-p3.offsetY,
-			t
-		)
-	else:
-		pos_x = cubic_interp(
-			-p0.offsetX,
-			-p1.offsetX,
-			-p2.offsetX,
-			-p3.offsetX,
-			t
-		)
-
-		pos_y = cubic_interp(
-			-p0.offsetY,
-			-p1.offsetY,
-			-p2.offsetY,
-			-p3.offsetY,
-			t
-		)
+	pos_y = cubic_interp(
+		-p0.offsetY,
+		-p1.offsetY,
+		-p2.offsetY,
+		-p3.offsetY,
+		t
+	)
 
 	weapon_sprite.position = Vector2(pos_x, pos_y) / 0.03125
 
@@ -426,9 +409,6 @@ func apply_interpolated_frame(a, b, t, i):
 	p3.angle,
 	t
 	)
-
-	if gunmode:
-		weapon_sprite.rotation_degrees += 180
 
 	weapon_sprite.scale = Vector2(
 		cubic_interp(-p0.scaleX, -p1.scaleX, -p2.scaleX, -p3.scaleX, t),
@@ -446,15 +426,12 @@ func _on_parse_pressed():
 	_write_back_keys() 
 	set_total_length()
 
-	
-
 func _yaml_to_data():
 	var parser = YAMLParser.new()
 	return parser.parse(yaml_text.text)
 
 func parse_data(result):
-	var parsed = JSON.parse_string(str(result))
-	for keyframe in parsed["animationKeyframes"]:
+	for keyframe in result["animationKeyframes"]:
 		var key = AnimationKey.new()
 		key.index = index
 		key.offsetX = keyframe.get("offsetX", 0.0)
@@ -471,7 +448,7 @@ func parse_data(result):
 		keyframes.append(key)
 		var item = TIMELINE_ITEM.instantiate()
 		anim_key_holder.add_child(item)
-		print(key._to_string())
+		#print(key._to_string())
 		item.call("initialise", key)
 		index+=1
 	await get_tree().process_frame
@@ -481,13 +458,11 @@ func set_total_length():
 	var length = 0.0
 	for key in keyframes:
 		length+=key.delta
-	print("total length of all segments: " +str(length))
+	#print("total length of all segments: " +str(length))
 	total_length_changed.emit(length)
 	total_length_label.text = "total length: " + str(length)
 	var progress_max = anim_key_holder.size.x 
 	progress_marker.position.x = progress_max*(time/length)-8
-	
-
 
 func _on_anim_button_pressed():
 	if(!playing):
@@ -503,7 +478,6 @@ func _on_anim_button_pressed():
 		time = 0.0
 		anim_button.text = "Play"
 
-
 func _on_global_rotation_text_changed(new_text):
 	var rot:float = float(new_text)
 	rot = wrapf(rot,0,360)
@@ -516,7 +490,6 @@ func _on_global_rotation_text_changed(new_text):
 		urist.frame = 5 
 	else:
 		urist.frame = 6
-
 
 func _on_set_sprite_button_pressed():
 	var file_dialog := FileDialog.new()
@@ -533,7 +506,6 @@ func _on_set_sprite_button_pressed():
 
 	file_dialog.popup_centered()
 
-
 func _on_sprite_file_selected(path: String):
 	var image := Image.load_from_file(path)
 
@@ -546,7 +518,6 @@ func _on_sprite_file_selected(path: String):
 	weapon_sprite.texture = texture
 	weapon_sprite_ghost.texture = texture
 
-
 func _on_time_scale_text_changed(new_text):
 	var tscale = float(new_text)
 	if(tscale):
@@ -556,15 +527,12 @@ func _on_interpolation_pressed():
 	interpolated = not interpolated
 	
 
-
 func _on_mirrored_anim_pressed():
 	mirrored = not mirrored
 
-
 func _on_gun_mode_pressed():
-	gunmode = not gunmode
+	gunmode = not gunmode #unused for now
 	rotation_anchor.global_rotation_degrees = 180
-
 
 func _on_clipboard_button_pressed():
 	var text = ""
@@ -576,18 +544,17 @@ func _on_clipboard_button_pressed():
 		text += key._to_yaml()
 	DisplayServer.clipboard_set(text)
 
-
 func _on_start_time_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var start = float(new_text)
-	if(start):
-		start_time = start
-
+	start_time = start
 
 func _on_end_time_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var end = float(new_text)
-	if(end):
-		end_time = end
-
+	end_time = end
 
 func _on_key_pos_x_text_changed(new_text):
 	if !new_text.is_valid_float():
@@ -596,14 +563,12 @@ func _on_key_pos_x_text_changed(new_text):
 	key_pos_x = posx
 	weapon_sprite_ghost.position.x = -posx * 32
 
-
 func _on_key_pos_y_text_changed(new_text):
 	if !new_text.is_valid_float():
 		return
 	var posy = float(new_text)
 	key_pos_y = posy
 	weapon_sprite_ghost.position.y = -posy * 32
-
 
 func _on_key_rot_text_changed(new_text):
 	if !new_text.is_valid_float():
@@ -612,74 +577,71 @@ func _on_key_rot_text_changed(new_text):
 	key_rot = rot
 	weapon_sprite_ghost.rotation_degrees = rot
 
-
 func _on_key_scale_x_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var val = float(new_text)
-	if(val):
-		key_scale_x = val
-		weapon_sprite_ghost.scale.x = -val
-
+	key_scale_x = val
+	weapon_sprite_ghost.scale.x = -val
 
 func _on_key_scale_y_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var val = float(new_text)
-	if(val):
-		key_scale_y = val
-		weapon_sprite_ghost.scale.y = val
-
+	key_scale_y = val
+	weapon_sprite_ghost.scale.y = val
 
 func _on_key_length_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var val = float(new_text)
 	if(val):
 		key_length = val
 
-
 func _on_color_picker_button_color_changed(color):
 	key_color = color
 
-
 func _on_timer_text_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var new_time = float(new_text)
-	if(new_time):
-		time = new_time
-		var time_accumulator = 0
-		var selected = 0
-		for i in range(keyframes.size()):
-			time_accumulator += keyframes[i].delta
-			if new_time <= time_accumulator:
-				selected = i
-				break
-		selected_key = selected
-		current_key_changed.emit(selected)
-		copy_key_to_ghost(selected)
-		key_text.text = str(selected)
-
+	time = new_time
+	var time_accumulator = 0
+	var selected = 0
+	for i in range(keyframes.size()):
+		time_accumulator += keyframes[i].delta
+		if new_time <= time_accumulator:
+			selected = i
+			break
+	selected_key = selected
+	current_key_changed.emit(selected)
+	copy_key_to_ghost(selected)
+	key_text.text = str(selected)
 
 func _on_key_text_text_changed(new_text):
+	if !new_text.is_valid_int():
+		return
 	var key = int(new_text)
 	selected_key = key
 	var time_accumulator = 0
 	for i in range(keyframes.size()):
 		if(i<key):
 			time_accumulator += keyframes[i].delta
-	time_accumulator += keyframes[min(key,keyframes.size()-1)].delta/2
+	time_accumulator += keyframes[min(key,keyframes.size()-1)].delta
 	time = time_accumulator
 	timer_text.text = str(time_accumulator)
 	_on_timer_text_text_changed(timer_text.text)
 	current_key_changed.emit(selected_key)
 	copy_key_to_ghost(selected_key)
 
-
 func _on_copy_key_toggle_pressed():
 	copy_key = !copy_key
-
 
 func _on_undo_button_pressed():
 	undo()
 
-
 func _on_redo_button_pressed():
 	redo()
-
 
 func _on_key_visualiser_toggle_pressed():
 	key_visuals = !key_visuals
