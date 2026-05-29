@@ -1,59 +1,59 @@
 extends Control
-@onready var yaml_text = %YAMLText
-const TIMELINE_ITEM = preload("uid://cd5nssgom0amw")
-@onready var anim_button = $VBoxContainer/HBoxContainer/Tree/AnimButton
-@onready var total_length_label = %TotalLengthLabel
-@onready var weapon_sprite = %WeaponSprite
-@onready var weapon_sprite_ghost = %WeaponSpriteGhost
-@onready var weapon_sprite_ghost_previous = %WeaponSpriteGhostPrevious
-@onready var weapon_sprite_ghost_next = %WeaponSpriteGhostNext
-@onready var rotation_anchor = %RotationAnchor
-@onready var progress_marker = %ProgressMarker
-@onready var anim_key_holder = %AnimKeyHolder
-@onready var urist = %Urist
-@onready var undo_redo_label = %UndoRedoLabel
+@onready var yaml_text := %YAMLText
+const TIMELINE_ITEM := preload("uid://cd5nssgom0amw")
+@onready var anim_button := $VBoxContainer/HBoxContainer/Tree/AnimButton
+@onready var total_length_label := %TotalLengthLabel
+@onready var weapon_sprite := %WeaponSprite
+@onready var weapon_sprite_ghost := %WeaponSpriteGhost
+@onready var weapon_sprite_ghost_previous := %WeaponSpriteGhostPrevious
+@onready var weapon_sprite_ghost_next := %WeaponSpriteGhostNext
+@onready var rotation_anchor := %RotationAnchor
+@onready var progress_marker := %ProgressMarker
+@onready var anim_key_holder := %AnimKeyHolder
+@onready var urist := %Urist
+@onready var undo_redo_label := %UndoRedoLabel
 
-@onready var timer_text = %TimerText
-@onready var key_text = %KeyText
-@onready var color_picker_button = %ColorPickerButton
+@onready var timer_text := %TimerText
+@onready var key_text := %KeyText
+@onready var color_picker_button := %ColorPickerButton
 
-@onready var key_pos_x_text = %KeyPosX
-@onready var key_pos_y_text = %KeyPosY
-@onready var key_scale_x_text = %KeyScaleX
-@onready var key_scale_y_text = %KeyScaleY
-@onready var key_rot_text = %KeyRot
-@onready var key_length_text = %KeyLength
+@onready var key_pos_x_text := %KeyPosX
+@onready var key_pos_y_text := %KeyPosY
+@onready var key_scale_x_text := %KeyScaleX
+@onready var key_scale_y_text := %KeyScaleY
+@onready var key_rot_text := %KeyRot
+@onready var key_length_text := %KeyLength
 
-var key_color = Color.WHITE
-var key_pos_x = 0.0
-var key_pos_y = 0.0
-var key_scale_x = 1.0
-var key_scale_y = 1.0
-var key_rot = 0.0
-var key_length = 0.1
+var key_color := Color.WHITE
+var key_pos_x := 0.0
+var key_pos_y := 0.0
+var key_scale_x := 1.0
+var key_scale_y := 1.0
+var key_rot := 0.0
+var key_length := 0.1
 
-var selected_key = 0
+var selected_key := 0
 
 var keyframes = []
 
 var undo_states = []
 var redo_states = []
-var is_restoring_state = false
+var is_restoring_state := false
 
 signal total_length_changed(item_count)
 signal current_key_changed(key)
-var index = 0
-var time = 0.0
-var playing = false
+var index := 0
+var time := 0.0
+var playing := false
 var time_scale := 1.0
-var interpolated = false
-var mirrored = false
-var gunmode = false
-var copy_key = false
-var key_visuals = true
-var start_time = 0.0
-var end_time = 0.0
-var move_speed = 50
+var interpolated := false
+var mirrored := false
+var gunmode := false
+var copy_key := false
+var key_visuals := true
+var start_time := 0.0
+var end_time := 0.0
+var move_speed := 50
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var new_key = AnimationKey.new()
@@ -134,7 +134,7 @@ func _process(delta):
 		current_key_changed.emit(selected_key)
 		update_animation()
 		set_total_length()
-		copy_key_to_ghost(selected_key)
+		#copy_key_to_ghost(selected_key)
 		save_undo_state()
 	elif(Input.is_action_just_pressed("next_key")):
 		selected_key=min(selected_key+1,keyframes.size()-1)
@@ -282,8 +282,8 @@ func copy_key_to_ghost(index):
 	if(!copy_key):
 		return
 	update_ghost_pos(weapon_sprite_ghost,key)
-	key_pos_x_text.text = str(snapped(-key.offsetX * 1 / 0.03125,0.01))
-	key_pos_y_text.text = str(snapped(-key.offsetY * 1 / 0.03125,0.01))
+	key_pos_x_text.text = str(key.offsetX)
+	key_pos_y_text.text = str(key.offsetY)
 	key_rot_text.text = str(int(key.angle))
 	key_length_text.text = str(key.delta)
 	key_color = key.color
@@ -292,8 +292,8 @@ func copy_key_to_ghost(index):
 	color_picker_button.color = key.color
 
 func update_ghost_pos(ghost, animationkey):
-	ghost.position.x = -animationkey.offsetX * 1 / 0.03125
-	ghost.position.y = -animationkey.offsetY * 1 / 0.03125
+	ghost.position.x = -animationkey.offsetX * 32
+	ghost.position.y = -animationkey.offsetY * 32
 	ghost.rotation_degrees = int(animationkey.angle)
 	ghost.scale.x = -animationkey.scaleX
 	ghost.scale.y = animationkey.scaleY
@@ -590,24 +590,27 @@ func _on_end_time_text_changed(new_text):
 
 
 func _on_key_pos_x_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var posx = float(new_text)
-	if(posx):
-		key_pos_x = posx
-		weapon_sprite_ghost.position.x = -posx / 0.03125
+	key_pos_x = posx
+	weapon_sprite_ghost.position.x = -posx * 32
 
 
 func _on_key_pos_y_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var posy = float(new_text)
-	if(posy):
-		key_pos_y = posy
-		weapon_sprite_ghost.position.y = -posy / 0.03125
+	key_pos_y = posy
+	weapon_sprite_ghost.position.y = -posy * 32
 
 
 func _on_key_rot_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
 	var rot = float(new_text)
-	if(rot):
-		key_rot = rot
-		weapon_sprite_ghost.rotation_degrees = rot
+	key_rot = rot
+	weapon_sprite_ghost.rotation_degrees = rot
 
 
 func _on_key_scale_x_text_changed(new_text):
