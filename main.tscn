@@ -93,6 +93,18 @@ action = &"quick_play"
 [sub_resource type="Shortcut" id="Shortcut_hh2x1"]
 events = [SubResource("InputEventAction_wxtjm")]
 
+[sub_resource type="InputEventAction" id="InputEventAction_kek77"]
+action = &"quick_left_rotate"
+
+[sub_resource type="Shortcut" id="Shortcut_5vw27"]
+events = [SubResource("InputEventAction_kek77")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_dg77c"]
+action = &"quick_right_rotate"
+
+[sub_resource type="Shortcut" id="Shortcut_4c57u"]
+events = [SubResource("InputEventAction_dg77c")]
+
 [sub_resource type="InputEventAction" id="InputEventAction_jg3b2"]
 action = &"undo"
 
@@ -270,12 +282,23 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "0.0"
 
+[node name="LeftRotButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer" unique_id=723534063]
+layout_mode = 2
+shortcut = SubResource("Shortcut_5vw27")
+text = "L"
+
+[node name="RightRotButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer" unique_id=48395117]
+layout_mode = 2
+shortcut = SubResource("Shortcut_4c57u")
+text = "R"
+
 [node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer" unique_id=540720733]
 layout_mode = 2
 text = "timescale"
 
 [node name="TimeScale" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer" unique_id=574690187]
 unique_name_in_owner = true
+custom_maximum_size = Vector2(48, -1)
 layout_mode = 2
 text = "1.0"
 
@@ -560,6 +583,8 @@ mark_time = 4.5
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer8/KeyText" to="." method="_on_key_text_text_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/SetSpriteButton" to="." method="_on_set_sprite_button_pressed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/GlobalRotation" to="." method="_on_global_rotation_text_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/LeftRotButton" to="." method="_on_left_rot_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/RightRotButton" to="." method="_on_right_rot_button_pressed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/TimeScale" to="." method="_on_time_scale_text_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer7/Interpolation" to="." method="_on_interpolation_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer7/MirroredAnim" to="." method="_on_mirrored_anim_pressed"]

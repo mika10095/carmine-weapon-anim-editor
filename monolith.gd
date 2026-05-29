@@ -12,6 +12,7 @@ const TIMELINE_ITEM := preload("uid://cd5nssgom0amw")
 @onready var anim_key_holder := %AnimKeyHolder
 @onready var urist := %Urist
 @onready var undo_redo_label := %UndoRedoLabel
+@onready var global_rotation = %GlobalRotation
 
 @onready var timer_text := %TimerText
 @onready var key_text := %KeyText
@@ -648,3 +649,15 @@ func _on_redo_button_pressed():
 func _on_key_visualiser_toggle_pressed():
 	key_visuals = !key_visuals
 	update_animation()
+
+
+func _on_left_rot_button_pressed():
+	var rot = snappedf(rotation_anchor.global_rotation_degrees+90,1)
+	global_rotation.text = str(rot)
+	_on_global_rotation_text_changed(str(rot))
+
+
+func _on_right_rot_button_pressed():
+	var rot = snappedf(rotation_anchor.global_rotation_degrees-90,1)
+	global_rotation.text = str(rot)
+	_on_global_rotation_text_changed(str(rot))
