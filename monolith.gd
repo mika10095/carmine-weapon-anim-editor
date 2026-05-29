@@ -99,8 +99,10 @@ func _process(delta):
 	if(rotation_vec):
 		weapon_sprite_ghost.rotation_degrees += rotation_vec.x*delta*move_speed
 		key_length_text.text = str(max(float(key_length_text.text)+snapped(rotation_vec.y*0.01,0.01),0.0))
-	weapon_sprite_ghost.rotation_degrees = wrapf(weapon_sprite_ghost.rotation_degrees,0,360.0) # TODO fix the spinny bug
-	key_rot_text.text = str(snapped(weapon_sprite_ghost.rotation_degrees,0.01))
+	key_rot_text.text = str(snapped(
+	wrapf(weapon_sprite_ghost.rotation_degrees, 0.0, 360.0),
+	0.01
+	))
 		
 	var new_key = AnimationKey.new()
 	new_key.index = index
@@ -334,6 +336,23 @@ func update_animation():
 	selected_key = i
 	apply_interpolated_frame(current, next, t, i)
 
+func shortest_angle_delta(from: float, to: float) -> float:
+	return wrapf(to - from, -180.0, 180.0)
+
+func unwrap_angle(reference: float, angle: float) -> float:
+	return reference + shortest_angle_delta(reference, angle)
+
+func cubic_angle_interp(a0, a1, a2, a3, t):
+	# unwrap everything relative to previous point
+	a1 = wrapf(a1, 0.0, 360.0)
+	a0 = unwrap_angle(a1, a0)
+	a2 = unwrap_angle(a1, a2)
+	a3 = unwrap_angle(a2, a3)
+
+	var result = cubic_interp(a0, a1, a2, a3, t)
+
+	return wrapf(result, 0.0, 360.0)
+
 func cubic_interp(p0, p1, p2, p3, t):
 	var t2 = t * t
 	var t3 = t2 * t
@@ -396,12 +415,12 @@ func apply_interpolated_frame(a, b, t, i):
 
 	weapon_sprite.position = Vector2(pos_x, pos_y) / 0.03125
 
-	weapon_sprite.rotation_degrees = cubic_interp(
-		p0.angle,
-		p1.angle,
-		p2.angle,
-		p3.angle,
-		t
+	weapon_sprite.rotation_degrees = cubic_angle_interp(
+	p0.angle,
+	p1.angle,
+	p2.angle,
+	p3.angle,
+	t
 	)
 
 	if gunmode:
