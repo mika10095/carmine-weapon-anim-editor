@@ -420,7 +420,7 @@ func apply_interpolated_frame(a, b, t, i):
 
 	weapon_sprite.modulate = a.color.lerp(b.color, t)
 
-func _on_parse_pressed(): #TODO fix lockout bug when importing 1 thing with 0 length
+func _on_parse_pressed():
 	keyframes.clear()
 	for child in anim_key_holder.get_children():
 		child.queue_free()
@@ -466,7 +466,7 @@ func set_total_length():
 		length+=key.delta
 	#print("total length of all segments: " +str(length))
 	total_length_changed.emit(length)
-	total_length_label.text = "total length: " + str(length)
+	total_length_label.text = "total length: " + str(snapped(length,0.01))
 	var progress_max = anim_key_holder.size.x 
 	progress_marker.position.x = progress_max*(time/length)-8
 
