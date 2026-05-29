@@ -9,9 +9,11 @@ const TIMELINE_ITEM = preload("uid://cd5nssgom0amw")
 @onready var progress_marker = %ProgressMarker
 @onready var anim_key_holder = %AnimKeyHolder
 @onready var urist = %Urist
+@onready var undo_redo_label = %UndoRedoLabel
 
 @onready var timer_text = %TimerText
 @onready var key_text = %KeyText
+@onready var color_picker_button = %ColorPickerButton
 
 @onready var key_pos_x_text = %KeyPosX
 @onready var key_pos_y_text = %KeyPosY
@@ -31,15 +33,21 @@ var key_length = 0.1
 var selected_key = 0
 
 var keyframes = []
+
+var undo_states = []
+var redo_states = []
+var is_restoring_state = false
+
 signal total_length_changed(item_count)
 signal current_key_changed(key)
 var index = 0
 var time = 0.0
 var playing = false
-var time_scale = 1.0
+var time_scale := 1.0
 var interpolated = false
 var mirrored = false
 var gunmode = false
+var copy_key = false
 var start_time = 0.0
 var end_time = 0.0
 var move_speed = 50
@@ -63,17 +71,14 @@ func _ready():
 	_on_parse_pressed()
 	_on_anim_button_pressed()
 	set_total_length()
+	await get_tree().process_frame
+	undo_states.clear()
+	redo_states.clear()
+	save_undo_state()
 	
 func _input(_event):
 	pass
 
-func _write_back_keys():
-	yaml_text.clear()
-	yaml_text.text += "animationKeyframes:\n"
-	for key in keyframes:
-		yaml_text.text += key._to_yaml()
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var movement_vec = Input.get_vector("move_left","move_right","move_up","move_down")
 	var rotation_vec = Input.get_vector("rotate_right", "rotate_left","length_down","length_up")
@@ -111,6 +116,8 @@ func _process(delta):
 		set_total_length()
 		_on_key_text_text_changed(str(selected_key+1))
 		update_animation()
+		copy_key_to_ghost(selected_key)
+		save_undo_state()
 	elif(Input.is_action_just_pressed("key_modify")):
 		new_key.index = selected_key
 		keyframes.set(selected_key, new_key)
@@ -119,18 +126,24 @@ func _process(delta):
 		current_key_changed.emit(selected_key)
 		update_animation()
 		set_total_length()
+		copy_key_to_ghost(selected_key)
+		save_undo_state()
 	elif(Input.is_action_just_pressed("next_key")):
 		selected_key=min(selected_key+1,keyframes.size()-1)
 		current_key_changed.emit(selected_key)
 		_on_key_text_text_changed(str(selected_key))
 		update_animation()
 		set_total_length()
+		copy_key_to_ghost(selected_key)
+		save_undo_state()
 	elif(Input.is_action_just_pressed("previous_key")):
 		selected_key=max(selected_key-1,0)
 		current_key_changed.emit(selected_key)
 		_on_key_text_text_changed(str(selected_key))
 		update_animation()
 		set_total_length()
+		copy_key_to_ghost(selected_key)
+		save_undo_state()
 	elif(Input.is_action_just_pressed("delete_key")):
 		if(keyframes.size()>1):
 			keyframes.remove_at(selected_key)
@@ -142,6 +155,8 @@ func _process(delta):
 		set_total_length()
 		_on_key_text_text_changed(selected_key)
 		update_animation()
+		copy_key_to_ghost(selected_key)
+		save_undo_state()
 	if(!playing):
 		return
 	
@@ -168,6 +183,94 @@ func _process(delta):
 		time = start_time
 
 	update_animation()
+
+
+func _write_back_keys():
+	yaml_text.clear()
+	yaml_text.text += "animationKeyframes:\n"
+
+	for key in keyframes:
+		yaml_text.text += key._to_yaml()
+
+func create_state():
+	return {
+		"yaml": yaml_text.text,
+		"selected_key": selected_key,
+		"time": time
+	}
+
+func save_undo_state():
+	redo_states.clear()
+	undo_states.append(create_state())
+
+	if undo_states.size() > 200:
+		undo_states.pop_front()
+	undo_redo_label.text = "Undo: "+str(undo_states.size())+" Redo: "+str(redo_states.size())
+
+func restore_state(state):
+	is_restoring_state = true
+
+	yaml_text.text = state.yaml
+
+	_on_parse_pressed()
+
+	selected_key = clamp(state.selected_key, 0, keyframes.size() - 1)
+	time = state.time
+
+	key_text.text = str(selected_key)
+	timer_text.text = str(snapped(time, 0.01))
+
+	current_key_changed.emit(selected_key)
+
+	copy_key_to_ghost(selected_key)
+
+	update_animation()
+	set_total_length()
+
+	is_restoring_state = false
+	undo_redo_label.text = "Undo states: "+str(undo_states.size())+" Redo states "+str(redo_states.size())
+
+func undo():
+	if undo_states.size() <= 1:
+		return
+
+	var current = create_state()
+	redo_states.append(current)
+
+	undo_states.pop_back()
+	undo_redo_label.text = "Undo states: "+str(undo_states.size())+" Redo states "+str(redo_states.size())
+	var previous = undo_states.back()
+
+	restore_state(previous)
+
+func redo():
+	if redo_states.is_empty():
+		return
+
+	var current = create_state()
+	undo_states.append(current)
+
+	var next = redo_states.pop_back()
+	undo_redo_label.text = "Undo states: "+str(undo_states.size())+" Redo states "+str(redo_states.size())
+	restore_state(next)
+
+func copy_key_to_ghost(index):
+	if(!copy_key):
+		return
+	var key :AnimationKey= keyframes[index]
+	weapon_sprite_ghost.position.x = -key.offsetX * 1 / 0.03125
+	weapon_sprite_ghost.position.y = -key.offsetY * 1 / 0.03125
+	weapon_sprite_ghost.rotation_degrees = int(key.angle)
+	weapon_sprite_ghost.scale.x = -key.scaleX
+	weapon_sprite_ghost.scale.y = key.scaleY
+	key_pos_x_text.text = str(snapped(-key.offsetX * 1 / 0.03125,0.01))
+	key_pos_y_text.text = str(snapped(-key.offsetY * 1 / 0.03125,0.01))
+	key_rot_text.text = str(int(key.angle))
+	key_length_text.text = str(key.delta)
+	key_color = key.color
+	key_scale_x_text.text = str(key.scaleX)
+	key_scale_y_text.text = str(key.scaleY)
+	color_picker_button.color = key.color
 
 func update_animation():
 	var current_time = time
@@ -207,6 +310,7 @@ func update_animation():
 	key_text.text = str(i)
 	
 	current_key_changed.emit(i)
+	copy_key_to_ghost(i)
 	selected_key = i
 	apply_interpolated_frame(current, next, t, i)
 
@@ -403,7 +507,7 @@ func _on_sprite_file_selected(path: String):
 func _on_time_scale_text_changed(new_text):
 	var tscale = float(new_text)
 	if(tscale):
-		time_scale = scale
+		time_scale = tscale
 
 func _on_interpolation_pressed():
 	interpolated = not interpolated
@@ -500,6 +604,7 @@ func _on_timer_text_text_changed(new_text):
 				break
 		selected_key = selected
 		current_key_changed.emit(selected)
+		copy_key_to_ghost(selected)
 		key_text.text = str(selected)
 
 
@@ -515,4 +620,16 @@ func _on_key_text_text_changed(new_text):
 	timer_text.text = str(time_accumulator)
 	_on_timer_text_text_changed(timer_text.text)
 	current_key_changed.emit(selected_key)
-	
+	copy_key_to_ghost(selected_key)
+
+
+func _on_copy_key_toggle_pressed():
+	copy_key = !copy_key
+
+
+func _on_undo_button_pressed():
+	undo()
+
+
+func _on_redo_button_pressed():
+	redo()

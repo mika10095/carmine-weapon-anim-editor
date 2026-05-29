@@ -93,6 +93,18 @@ action = &"quick_play"
 [sub_resource type="Shortcut" id="Shortcut_hh2x1"]
 events = [SubResource("InputEventAction_wxtjm")]
 
+[sub_resource type="InputEventAction" id="InputEventAction_jg3b2"]
+action = &"undo"
+
+[sub_resource type="Shortcut" id="Shortcut_gxbgy"]
+events = [SubResource("InputEventAction_jg3b2")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_k4vqa"]
+action = &"redo"
+
+[sub_resource type="Shortcut" id="Shortcut_uek5b"]
+events = [SubResource("InputEventAction_k4vqa")]
+
 [node name="Editor" type="Control" unique_id=1551929522]
 layout_mode = 3
 anchors_preset = 15
@@ -277,6 +289,7 @@ layout_mode = 2
 text = "Key Color Picker"
 
 [node name="ColorPickerButton" type="ColorPickerButton" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer3" unique_id=223959032]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Sprite Modulate
 "
@@ -351,6 +364,29 @@ unique_name_in_owner = true
 custom_maximum_size = Vector2(48, -1)
 layout_mode = 2
 text = "0.1"
+
+[node name="CopyKeyToggle" type="CheckButton" parent="VBoxContainer/HBoxContainer/Tree" unique_id=444534389]
+layout_mode = 2
+text = "Copy Selected Key"
+
+[node name="HBoxContainer9" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=1633056803]
+layout_mode = 2
+
+[node name="UndoButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer9" unique_id=78424340]
+layout_mode = 2
+shortcut = SubResource("Shortcut_gxbgy")
+text = "Undo"
+
+[node name="RedoButton" type="Button" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer9" unique_id=675308681]
+layout_mode = 2
+shortcut = SubResource("Shortcut_uek5b")
+text = "Redo
+"
+
+[node name="UndoRedoLabel" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer9" unique_id=1509302403]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Undo: 0 Redo: 0"
 
 [node name="Control" type="Control" parent="VBoxContainer/HBoxContainer" unique_id=1860517993]
 custom_minimum_size = Vector2(307, 256)
@@ -512,5 +548,8 @@ mark_time = 4.5
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer5/KeyScaleY" to="." method="_on_key_scale_y_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer6/KeyRot" to="." method="_on_key_rot_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer6/KeyLength" to="." method="_on_key_length_text_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/CopyKeyToggle" to="." method="_on_copy_key_toggle_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer9/UndoButton" to="." method="_on_undo_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer9/RedoButton" to="." method="_on_redo_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Control/VBoxContainer/Button" to="." method="_on_parse_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Control/VBoxContainer/ClipboardButton" to="." method="_on_clipboard_button_pressed"]
