@@ -13,6 +13,16 @@ const TIMELINE_ITEM := preload("uid://cd5nssgom0amw")
 @onready var urist := %Urist
 @onready var undo_redo_label := %UndoRedoLabel
 @onready var global_rotation = %GlobalRotation
+@onready var angle_line_1 = %Line1
+@onready var angle_line_2 = %Line2
+
+@onready var delay_line_edit = %DelayLineEdit
+@onready var duration_line_edit = %DurationLineEdit
+@onready var angle_line_edit = %AngleLineEdit
+@onready var length_line_edit = %LengthLineEdit
+@onready var attack_visuals_line = %AttackVisuals
+
+
 
 @onready var timer_text := %TimerText
 @onready var key_text := %KeyText
@@ -51,7 +61,11 @@ var interpolated := false
 var mirrored := false
 var gunmode := false #unused for now
 var copy_key := false
-var key_visuals := true
+var key_visuals := false
+var angle_helper := false
+var attack_visuals := false
+var attack_visuals_right_sided := false
+var angle_helper_angle := 30.0
 var start_time := 0.0
 var end_time := 0.0
 var move_speed := 50
@@ -314,7 +328,16 @@ func update_animation():
 	var current_time = time
 	var time_accumulator = 0.0
 	var i = 0
-
+	
+	if angle_helper:
+		angle_line_1.visible = true
+		angle_line_2.visible = true
+		angle_line_1.rotation_degrees = angle_helper_angle/2
+		angle_line_2.rotation_degrees = -angle_helper_angle/2
+	else:
+		angle_line_1.visible = false
+		angle_line_2.visible = false
+	
 	if keyframes.size() < 1:
 		return
 
@@ -348,6 +371,20 @@ func update_animation():
 	current_key_changed.emit(i)
 	copy_key_to_ghost(i)
 	selected_key = i
+	
+	if !attack_visuals || time < float(delay_line_edit.text):
+		attack_visuals_line.visible = false
+	else:
+		attack_visuals_line.visible = true
+	if(time > float(delay_line_edit.text)+float(duration_line_edit.text)):
+		attack_visuals_line.visible = false
+	var multiplier = 1 
+	if(attack_visuals_right_sided):
+		multiplier = -1
+	var angle = (time-float(delay_line_edit.text)) / float(duration_line_edit.text) * float(angle_line_edit.text) * multiplier
+	attack_visuals_line.rotation_degrees = float(angle_line_edit.text)/2*multiplier
+	attack_visuals_line.rotation_degrees -= angle 
+	attack_visuals_line.scale.y = -float(length_line_edit.text)*0.25
 	apply_interpolated_frame(current, next, t, i)
 
 func shortest_angle_delta(from: float, to: float) -> float:
@@ -472,7 +509,10 @@ func parse_data(result):
 		var item = TIMELINE_ITEM.instantiate()
 		anim_key_holder.add_child(item)
 		#print(key._to_string())
-		item.call("initialise", key)
+		var previous_key = null
+		if keyframes.size() >= 1:
+			previous_key = keyframes[keyframes.size() - 2]
+		item.initialise(key, previous_key)
 		index+=1
 	await get_tree().process_frame
 	set_total_length()
@@ -483,9 +523,10 @@ func set_total_length():
 		length+=key.delta
 	#print("total length of all segments: " +str(length))
 	total_length_changed.emit(length)
-	total_length_label.text = "total length: " + str(snapped(length,0.01))
 	var progress_max = anim_key_holder.size.x 
 	progress_marker.position.x = progress_max*(time/length)-8
+	length -= 0.00001
+	total_length_label.text = "total length: " + str(snapped(length,0.05))
 
 func _on_anim_button_pressed():
 	if(!playing):
@@ -557,10 +598,13 @@ func _on_gun_mode_pressed():
 func _on_clipboard_button_pressed():
 	var text = ""
 	text += "animationKeyframes:\n"
+	if(attack_visuals):
+		text += "      #angle: " + angle_line_edit.text + " range: " + length_line_edit.text + " windup: " + delay_line_edit.text + " swing duration: " + duration_line_edit.text + "\n"
 	var init_key = keyframes[0]
 	var delta = init_key.delta
 	init_key.delta = 0
-	text += init_key._to_yaml()
+	if(delta != 0):
+		text += init_key._to_yaml()
 	init_key.delta = delta
 	for key in keyframes:
 		text += key._to_yaml()
@@ -571,12 +615,14 @@ func _on_start_time_text_changed(new_text):
 		return
 	var start = float(new_text)
 	start_time = start
+	update_animation()
 
 func _on_end_time_text_changed(new_text):
 	if !new_text.is_valid_float():
 		return
 	var end = float(new_text)
 	end_time = end
+	update_animation()
 
 func _on_key_pos_x_text_changed(new_text):
 	if !new_text.is_valid_float():
@@ -639,6 +685,7 @@ func _on_timer_text_text_changed(new_text):
 	current_key_changed.emit(selected)
 	copy_key_to_ghost(selected)
 	key_text.text = str(selected)
+	update_animation()
 
 func _on_key_text_text_changed(new_text):
 	if !new_text.is_valid_int():
@@ -684,3 +731,24 @@ func _on_right_rot_button_pressed():
 	var rot = snappedf(rotation_anchor.global_rotation_degrees-90,1)
 	global_rotation.text = str(rot)
 	_on_global_rotation_text_changed(str(rot))
+
+func _on_angle_helper_check_pressed():
+	angle_helper = !angle_helper
+	update_animation()
+
+
+func _on_angle_helper_label_text_changed(new_text):
+	if !new_text.is_valid_float():
+		return
+	angle_helper_angle = float(new_text)
+	update_animation()
+
+
+func _on_attack_visuals_pressed():
+	attack_visuals = !attack_visuals
+	update_animation()
+
+
+func _on_right_left_attack_pressed():
+	attack_visuals_right_sided = !attack_visuals_right_sided
+	update_animation()
