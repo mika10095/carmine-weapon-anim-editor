@@ -393,14 +393,12 @@ func shortest_angle_delta(from: float, to: float) -> float:
 func unwrap_angle(reference: float, angle: float) -> float:
 	return reference + shortest_angle_delta(reference, angle)
 
-func cubic_angle_interp(a0, a1, a2, a3, t):
+func angle_interp(a1, a2, t):
 	# unwrap everything relative to previous point
 	a1 = wrapf(a1, 0.0, 360.0)
-	a0 = unwrap_angle(a1, a0)
 	a2 = unwrap_angle(a1, a2)
-	a3 = unwrap_angle(a2, a3)
 
-	var result = cubic_interp(a0, a1, a2, a3, t)
+	var result = lerp(a1, a2, t)
 
 	return wrapf(result, 0.0, 360.0)
 
@@ -449,17 +447,15 @@ func apply_interpolated_frame(a, b, t, i):
 
 	weapon_sprite.position = Vector2(pos_x, pos_y) / 0.03125
 
-	weapon_sprite.rotation_degrees = cubic_angle_interp(
-	p0.angle,
+	weapon_sprite.rotation_degrees = angle_interp(
 	p1.angle,
 	p2.angle,
-	p3.angle,
 	t
 	)
 
 	weapon_sprite.scale = Vector2(
-		cubic_interp(-p0.scaleX, -p1.scaleX, -p2.scaleX, -p3.scaleX, t),
-		cubic_interp(p0.scaleY, p1.scaleY, p2.scaleY, p3.scaleY, t)
+		lerp(-p1.scaleX, -p2.scaleX, t),
+		lerp(p1.scaleY, p2.scaleY, t)
 	)
 
 	weapon_sprite.modulate = a.color.lerp(b.color, t)
