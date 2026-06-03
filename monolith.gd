@@ -69,6 +69,7 @@ var angle_helper_angle := 30.0
 var start_time := 0.0
 var end_time := 0.0
 var move_speed := 50
+var sprite_rotation_adjust := 0.0
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var new_key = AnimationKey.new()
@@ -132,7 +133,7 @@ func _process(delta):
 		new_key.index = index
 		new_key.offsetX = float(key_pos_x_text.text)
 		new_key.offsetY = float(key_pos_y_text.text)
-		new_key.angle = float(key_rot_text.text)
+		new_key.angle = float(key_rot_text.text) - sprite_rotation_adjust
 		new_key.scaleX = float(key_scale_x_text.text)
 		new_key.scaleY = float(key_scale_y_text.text)
 		new_key.color = key_color
@@ -320,7 +321,7 @@ func copy_key_to_ghost(index):
 func update_ghost_pos(ghost, animationkey):
 	ghost.position.x = -animationkey.offsetX * 32
 	ghost.position.y = -animationkey.offsetY * 32
-	ghost.rotation_degrees = int(animationkey.angle)
+	ghost.rotation_degrees = int(animationkey.angle+sprite_rotation_adjust)
 	ghost.scale.x = -animationkey.scaleX
 	ghost.scale.y = animationkey.scaleY
 
@@ -416,7 +417,7 @@ func cubic_interp(p0, p1, p2, p3, t):
 func apply_interpolated_frame(a, b, t, i):
 	if !interpolated:
 		weapon_sprite.position = Vector2(-a.offsetX, -a.offsetY) / 0.03125
-		weapon_sprite.rotation_degrees = a.angle
+		weapon_sprite.rotation_degrees = a.angle + sprite_rotation_adjust
 		weapon_sprite.scale = Vector2(-a.scaleX, a.scaleY)
 		weapon_sprite.modulate = a.color
 		return
@@ -451,7 +452,7 @@ func apply_interpolated_frame(a, b, t, i):
 	p1.angle,
 	p2.angle,
 	t
-	)
+	) + sprite_rotation_adjust
 
 	weapon_sprite.scale = Vector2(
 		lerp(-p1.scaleX, -p2.scaleX, t),
@@ -747,4 +748,11 @@ func _on_attack_visuals_pressed():
 
 func _on_right_left_attack_pressed():
 	attack_visuals_right_sided = !attack_visuals_right_sided
+	update_animation()
+
+
+func _on_sprite_global_rot_edit_text_changed(new_text):
+	weapon_sprite_ghost.rotation_degrees -= sprite_rotation_adjust
+	sprite_rotation_adjust = float(new_text)
+	weapon_sprite_ghost.rotation_degrees += sprite_rotation_adjust
 	update_animation()

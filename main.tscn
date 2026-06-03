@@ -277,7 +277,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer" unique_id=1595839434]
 layout_mode = 2
-text = "rotation"
+text = "urist angle"
 
 [node name="GlobalRotation" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer" unique_id=1528811574]
 unique_name_in_owner = true
@@ -324,13 +324,20 @@ visible = false
 layout_mode = 2
 text = "Undo: 0 Redo: 0"
 
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer9" unique_id=1974397623]
+layout_mode = 2
+text = "sprite rotation"
+
+[node name="SpriteGlobalRotEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/Tree/HBoxContainer9" unique_id=1427668390]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0.0"
+
 [node name="FoldableContainer" type="FoldableContainer" parent="VBoxContainer/HBoxContainer/Tree" unique_id=839379806]
 layout_mode = 2
-folded = true
 title = "Animation Settings"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/Tree/FoldableContainer" unique_id=461116178]
-visible = false
 layout_mode = 2
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/Tree/FoldableContainer/VBoxContainer" unique_id=801280974]
@@ -728,6 +735,7 @@ mark_time = 4.5
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/TimeScale" to="." method="_on_time_scale_text_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer9/UndoButton" to="." method="_on_undo_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer9/RedoButton" to="." method="_on_redo_button_pressed"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer9/SpriteGlobalRotEdit" to="." method="_on_sprite_global_rot_edit_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/FoldableContainer/VBoxContainer/HBoxContainer2/StartTime" to="." method="_on_start_time_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/FoldableContainer/VBoxContainer/HBoxContainer2/EndTime" to="." method="_on_end_time_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/FoldableContainer/VBoxContainer/HBoxContainer8/TimerText" to="." method="_on_timer_text_text_changed"]
