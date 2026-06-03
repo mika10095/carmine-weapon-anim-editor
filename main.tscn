@@ -712,21 +712,13 @@ color = Color(0, 0, 0, 1)
 script = ExtResource("6_7mycd")
 mark_time = 2.0
 
-[node name="FixedMarker3" type="ColorRect" parent="VBoxContainer/Timeline" unique_id=426947358]
+[node name="FixedMarker25" type="ColorRect" parent="VBoxContainer/Timeline" unique_id=426947358]
 layout_mode = 0
 offset_right = 10.0
 offset_bottom = 32.0
 color = Color(0, 0, 0, 1)
 script = ExtResource("6_7mycd")
-mark_time = 3.0
-
-[node name="FixedMarker45" type="ColorRect" parent="VBoxContainer/Timeline" unique_id=1250721564]
-layout_mode = 0
-offset_right = 10.0
-offset_bottom = 32.0
-color = Color(0, 0, 0, 1)
-script = ExtResource("6_7mycd")
-mark_time = 4.5
+mark_time = 2.5
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Tree/AnimButton" to="." method="_on_anim_button_pressed"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/Tree/HBoxContainer/GlobalRotation" to="." method="_on_global_rotation_text_changed"]

@@ -599,12 +599,18 @@ func _on_clipboard_button_pressed():
 		text += "      #angle: " + angle_line_edit.text + " range: " + length_line_edit.text + " windup: " + delay_line_edit.text + " swing duration: " + duration_line_edit.text + "\n"
 	var init_key = keyframes[0]
 	var delta = init_key.delta
+	var angle = init_key.angle
 	init_key.delta = 0
+	init_key.angle = wrapf(init_key.angle + sprite_rotation_adjust, 0, 360)
 	if(delta != 0):
 		text += init_key._to_yaml()
 	init_key.delta = delta
+	init_key.angle = angle
 	for key in keyframes:
+		angle = key.angle
+		key.angle = wrapf(key.angle + sprite_rotation_adjust, 0, 360)
 		text += key._to_yaml()
+		key.angle = angle
 	DisplayServer.clipboard_set(text)
 
 func _on_start_time_text_changed(new_text):
